@@ -1,16 +1,21 @@
 package com.example.shengx.geostories;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 
 public class AddGeoStory extends AppCompatActivity {
+    Intent intent;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_geo_story);
+        intent = new Intent(this, MapsActivity.class);
     }
 
     @Override
@@ -21,7 +26,11 @@ public class AddGeoStory extends AppCompatActivity {
     }
 
     @Override
-    public void openOptionsMenu() {
-        super.openOptionsMenu();
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.tomap:
+                startActivity(intent);
+        }
+        return true;
     }
 }
