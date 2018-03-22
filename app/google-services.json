@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "599173508308",
+    "firebase_url": "https://geostories-87738.firebaseio.com",
+    "project_id": "geostories-87738",
+    "storage_bucket": "geostories-87738.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:599173508308:android:0b12d64ffd638278",
+        "android_client_info": {
+          "package_name": "com.example.shengx.geostories"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "599173508308-5c6p3o0i52fajmrb78i2nl9sd1ibt4b4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.shengx.geostories",
+            "certificate_hash": "1dc03376cf82de420ec1e425934ef582d04259bb"
+          }
+        },
+        {
+          "client_id": "599173508308-20pqg2u0k0fmtdchn21u1l958e8mmapf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCRNiYmfV_-VCl7Khc4k9BQ2OEYQLxG2E4"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "599173508308-20pqg2u0k0fmtdchn21u1l958e8mmapf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
