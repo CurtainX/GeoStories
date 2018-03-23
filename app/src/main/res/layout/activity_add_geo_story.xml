@@ -10,7 +10,7 @@
     tools:context="com.example.shengx.geostories.AddGeoStory">
 
     <EditText
-        android:id="@+id/fname"
+        android:id="@+id/geostory_input"
         style="@style/Widget.AppCompat.Light.AutoCompleteTextView"
         android:layout_width="348dp"
         android:layout_height="145dp"
@@ -20,7 +20,7 @@
         android:layout_marginTop="8dp"
         android:background="@layout/my_edit_text_border"
         android:gravity="top|center"
-        android:hint="First Name"
+        android:hint="Add a geostory"
         android:padding="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

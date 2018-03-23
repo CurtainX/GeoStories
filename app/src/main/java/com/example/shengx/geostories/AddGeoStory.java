@@ -30,7 +30,9 @@ public class AddGeoStory extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.tomap:
                 startActivity(intent);
+                return true;
+            default:
+                return  super.onOptionsItemSelected(item);
         }
-        return true;
     }
 }
