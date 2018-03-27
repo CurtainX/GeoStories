@@ -21,6 +21,7 @@
         android:background="@layout/my_edit_text_border"
         android:gravity="top|center"
         android:hint="Add a geostory"
+        android:singleLine="true"
         android:padding="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

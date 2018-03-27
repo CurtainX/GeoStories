@@ -1,26 +1,44 @@
 package com.example.shengx.geostories;
 
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.os.AsyncTask;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.widget.Toast;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
+    private final int REQ_LOC_CODE=100;
+    private FusedLocationProviderClient mFusedLocationProviderClient;
+    private double latitude, longitude;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+        mFusedLocationProviderClient= LocationServices.getFusedLocationProviderClient(this);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -49,11 +67,53 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 Log.d("Location",point.latitude+"******"+point.longitude);
                 mMap.clear();
                 mMap.addMarker(new MarkerOptions().position(point));
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(point));
+
             }
         });
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        if(checkLocationPermission()){
+                mFusedLocationProviderClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+                        latitude=location.getLatitude();
+                        longitude=location.getLongitude();
+                        Log.d("Location",latitude+"******"+longitude);
+                        // Add a marker in Sydney and move the camera
+                        LatLng clientLocation = new LatLng(latitude, longitude);
+                        mMap.addMarker(new MarkerOptions().position(clientLocation).title("My Location"));
+                        mMap.moveCamera(CameraUpdateFactory.newLatLng(clientLocation));
+                    }
+                });
+        }
+
+
     }
+
+    @Override
+    public boolean onCreatePanelMenu(int featureId, Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.postgeostory, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Intent intent=new Intent(this,MainActivity.class);
+        switch (item.getItemId()) {
+            case R.id.post:
+                startActivity(intent);
+                return true;
+            default:
+                return  super.onOptionsItemSelected(item);
+        }
+    }
+
+
+    public boolean checkLocationPermission(){
+        ActivityCompat.requestPermissions(this,new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},REQ_LOC_CODE);
+        int locationPermissionCode=ActivityCompat.checkSelfPermission(this,android.Manifest.permission.ACCESS_FINE_LOCATION);
+        return locationPermissionCode == PackageManager.PERMISSION_GRANTED;
+    }
+
+
 }
