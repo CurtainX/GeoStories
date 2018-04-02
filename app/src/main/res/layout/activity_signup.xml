@@ -2,8 +2,65 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/logincontainer_si"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.shengx.geostories.Signup">
+    android:background="@color/colorPrimary"
+    >
+
+    <EditText
+        android:id="@+id/username_su"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="15dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="52dp"
+        android:backgroundTint="@color/common_google_signin_btn_text_dark_default"
+        android:ems="10"
+        android:hint="Username"
+        android:inputType="textPersonName"
+        android:textColor="@color/cardview_light_background"
+        android:textColorHint="@color/cardview_light_background"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.116" />
+
+    <EditText
+        android:id="@+id/passsword_su"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="15dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="15dp"
+        android:backgroundTint="@color/common_google_signin_btn_text_dark_default"
+        android:ems="10"
+        android:hint="Password"
+        android:inputType="textPersonName"
+        android:textColor="@color/cardview_light_background"
+        android:textColorHint="@color/cardview_light_background"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/username_su" />
+
+    <Button
+        android:id="@+id/signup_su"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="30dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="20dp"
+        android:background="@color/loginBtn"
+        android:text="Sign Up"
+        android:textColor="@color/cardview_light_background"
+        android:textColorHint="@color/cardview_light_background"
+        android:theme="@style/AppTheme.NoActionBar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/passsword_su" />
+
 
 </android.support.constraint.ConstraintLayout>
