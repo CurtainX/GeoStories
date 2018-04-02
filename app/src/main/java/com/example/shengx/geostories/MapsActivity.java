@@ -68,6 +68,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 mMap.clear();
                 mMap.addMarker(new MarkerOptions().position(point));
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(point));
+                mMap.setMinZoomPreference(19);
+                mMap.resetMinMaxZoomPreference();
 
             }
         });
