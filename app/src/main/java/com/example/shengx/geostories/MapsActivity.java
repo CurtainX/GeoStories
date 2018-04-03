@@ -2,6 +2,7 @@ package com.example.shengx.geostories;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
@@ -13,6 +14,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.SeekBar;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -23,6 +25,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -33,17 +36,40 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private final int REQ_LOC_CODE=100;
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private double latitude, longitude;
-
+    private SeekBar rangeContorller;
+    private Circle circle;
+    private int initialRange=60;
+    private int maxRange=400;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+        rangeContorller=(SeekBar)findViewById(R.id.skbRange);
+        rangeContorller.setMax(maxRange);
+        rangeContorller.setProgress(initialRange);
         mFusedLocationProviderClient= LocationServices.getFusedLocationProviderClient(this);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        rangeContorller.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                initialRange=progress;
+                circle.setRadius(progress);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
     }
 
 
@@ -68,9 +94,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 mMap.clear();
                 mMap.addMarker(new MarkerOptions().position(point));
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(point));
-                mMap.setMinZoomPreference(19);
-                mMap.resetMinMaxZoomPreference();
-
+                circle = mMap.addCircle(new CircleOptions()
+                        .center(new LatLng(point.latitude,point.longitude))
+                        .radius(initialRange)
+                        .strokeColor(Color.RED)
+                        .strokeWidth(2)
+                        .fillColor(Color.TRANSPARENT));
             }
         });
         if(checkLocationPermission()){
@@ -84,6 +113,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                         LatLng clientLocation = new LatLng(latitude, longitude);
                         mMap.addMarker(new MarkerOptions().position(clientLocation).title("My Location"));
                         mMap.moveCamera(CameraUpdateFactory.newLatLng(clientLocation));
+                        circle = mMap.addCircle(new CircleOptions()
+                                .center(new LatLng(latitude,longitude))
+                                .radius(initialRange)
+                                .strokeColor(Color.RED)
+                                .strokeWidth(2)
+                                .fillColor(Color.TRANSPARENT));
                     }
                 });
         }
@@ -118,4 +153,15 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
 
+
+    public void postGeostory(int range, double longitude, double latitude, String story){
+        //send range, point, story to fire base
+
+    }
+    public boolean checkCity(Location gps, Location point){
+        //check if two location is the same city
+        //user only allowed to post within the same city
+        //geo coding to check
+        return false;
+    }
 }

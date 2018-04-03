@@ -1,6 +1,9 @@
 package com.example.shengx.geostories;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.provider.Settings;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -36,11 +39,15 @@ public class AddGeoStory extends AppCompatActivity {
                     Toast.makeText(this,"Please Enter Your Geostory",Toast.LENGTH_LONG).show();
                 }
                 else {
-                    startActivity(intent);
+                        startActivity(intent);
                 }
                 return true;
             default:
                 return  super.onOptionsItemSelected(item);
         }
+    }
+
+    public void passGeostory(String geoStory){
+
     }
 }
