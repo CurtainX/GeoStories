@@ -58,7 +58,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Signup">
+        <activity android:name=".Signup"
+            android:parentActivityName=".Login">
 
         </activity>
     </application>

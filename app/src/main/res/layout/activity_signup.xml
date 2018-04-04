@@ -2,11 +2,10 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/logincontainer_si"
+    android:id="@+id/logincontainer_su"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorPrimary"
-    >
+    android:background="@color/colorPrimary">
 
     <EditText
         android:id="@+id/username_su"
@@ -62,12 +61,12 @@
 
 
     <Button
-        android:id="@+id/signup_su"
+        android:id="@+id/signin_su"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="30dp"
         android:layout_marginStart="30dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="16dp"
         android:background="@color/loginBtn"
         android:text="Sign Up"
         android:textColor="@color/cardview_light_background"

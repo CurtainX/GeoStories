@@ -1,9 +1,9 @@
 package com.example.shengx.geostories;
 
-import android.nfc.Tag;
+import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -22,6 +22,7 @@ public class Signup extends AppCompatActivity {
     private final String TAG="Log";
     EditText username,email,password;
     Button create;
+    Intent intent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,18 +30,35 @@ public class Signup extends AppCompatActivity {
         setContentView(R.layout.activity_signup);
         getSupportActionBar().setElevation(0);
         mAuth = FirebaseAuth.getInstance();
+        intent=new Intent(this,Login.class);
         username=(EditText)findViewById(R.id.username_su);
         email=(EditText)findViewById(R.id.email_su);
         password=(EditText)findViewById(R.id.passsword_su);
-        create=(Button)findViewById(R.id.signup_su);
+        create=(Button)findViewById(R.id.signin_su);
         create.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String mUsername=username.getText().toString();
                 String mEmail=email.getText().toString();
                 String mPassword=password.getText().toString();
-                if(mUsername.trim().length()>0&&mPassword.trim().length()>0){
+                if(mUsername.trim().length()>0&&mPassword.trim().length()>5&&mEmail.trim().length()>0){
                     createUser(mEmail,mPassword,mUsername);
+                }
+                else if(mUsername.trim().length()==0&&mEmail.trim().length()==0&&mPassword.trim().length()==0){
+                    Toast.makeText(getApplicationContext(),"Please fill the blanks to continue",Toast.LENGTH_LONG).show();
+                }
+                else if(mUsername.trim().length()==0){
+                    Toast.makeText(getApplicationContext(),"Please enter your username.",Toast.LENGTH_LONG).show();
+                }
+                else if(mEmail.trim().length()==0){
+                    Toast.makeText(getApplicationContext(),"Please enter you email address.",Toast.LENGTH_LONG).show();
+
+                }
+                else if(mPassword.trim().length()==0){
+                    Toast.makeText(getApplicationContext(),"Please enter you password.",Toast.LENGTH_LONG).show();
+                }
+                else if(mPassword.trim().length()<6){
+                    Toast.makeText(getApplicationContext(),"Password must contain more than 6 characters.",Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -55,39 +73,24 @@ public class Signup extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
-                            Toast.makeText(Signup.this, "Account Created",
-                                    Toast.LENGTH_SHORT).show();
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Log.w(TAG, "createUserWithEmail:failure", task.getException());
-                            Toast.makeText(Signup.this, "Authentication failed.",
-                                    Toast.LENGTH_SHORT).show();
-                        }
 
-                    }
-                });
-        mAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            Log.d(TAG, "signInWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
                             UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
                                     .setDisplayName(username).build();
                             user.updateProfile(profileUpdates);
-                            FirebaseUser user2 = FirebaseAuth.getInstance().getCurrentUser();
+                            startActivity(intent);
+                            finish();
 
-                            Log.d(TAG,user2.getDisplayName()+"*****************"+username);
                         } else {
                             // If sign in fails, display a message to the user.
-                            Log.w(TAG, "signInWithEmail:failure", task.getException());
+                            Log.w(TAG, "createUserWithEmail:failure", task.getException());
+                            Toast.makeText(Signup.this, "Authentication failed: Incorrect email address",
+                                    Toast.LENGTH_SHORT).show();
                         }
 
-                        // ...
                     }
                 });
     }
+
 
 }
