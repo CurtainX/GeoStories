@@ -31,24 +31,19 @@ public class Signup extends AppCompatActivity {
         getSupportActionBar().setElevation(0);
         mAuth = FirebaseAuth.getInstance();
         intent=new Intent(this,Login.class);
-        username=(EditText)findViewById(R.id.username_su);
         email=(EditText)findViewById(R.id.email_su);
         password=(EditText)findViewById(R.id.passsword_su);
         create=(Button)findViewById(R.id.signin_su);
         create.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String mUsername=username.getText().toString();
                 String mEmail=email.getText().toString();
                 String mPassword=password.getText().toString();
-                if(mUsername.trim().length()>0&&mPassword.trim().length()>5&&mEmail.trim().length()>0){
-                    createUser(mEmail,mPassword,mUsername);
+                if(mPassword.trim().length()>5&&mEmail.trim().length()>0){
+                    createUser(mEmail,mPassword);
                 }
-                else if(mUsername.trim().length()==0&&mEmail.trim().length()==0&&mPassword.trim().length()==0){
+                else if(mEmail.trim().length()==0&&mPassword.trim().length()==0){
                     Toast.makeText(getApplicationContext(),"Please fill the blanks to continue",Toast.LENGTH_LONG).show();
-                }
-                else if(mUsername.trim().length()==0){
-                    Toast.makeText(getApplicationContext(),"Please enter your username.",Toast.LENGTH_LONG).show();
                 }
                 else if(mEmail.trim().length()==0){
                     Toast.makeText(getApplicationContext(),"Please enter you email address.",Toast.LENGTH_LONG).show();
@@ -66,7 +61,7 @@ public class Signup extends AppCompatActivity {
     }
 
 
-    public void createUser(String email, String password, final String username){
+    public void createUser(String email, String password){
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -75,9 +70,6 @@ public class Signup extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
 
                             FirebaseUser user = mAuth.getCurrentUser();
-                            UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                                    .setDisplayName(username).build();
-                            user.updateProfile(profileUpdates);
                             startActivity(intent);
                             finish();
 

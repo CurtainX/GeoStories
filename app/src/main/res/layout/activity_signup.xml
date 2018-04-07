@@ -8,29 +8,12 @@
     android:background="@color/colorPrimary">
 
     <EditText
-        android:id="@+id/username_su"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="15dp"
-        android:layout_marginStart="15dp"
-        android:layout_marginTop="76dp"
-        android:backgroundTint="@color/common_google_signin_btn_text_dark_default"
-        android:ems="10"
-        android:hint="Username"
-        android:inputType="textPersonName"
-        android:textColor="@color/cardview_light_background"
-        android:textColorHint="@color/cardview_light_background"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <EditText
         android:id="@+id/email_su"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="15dp"
         android:layout_marginStart="15dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="64dp"
         android:backgroundTint="@color/common_google_signin_btn_text_dark_default"
         android:ems="10"
         android:hint="Email"
@@ -38,9 +21,9 @@
         android:textColor="@color/cardview_light_background"
         android:textColorHint="@color/cardview_light_background"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.503"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/username_su" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
         android:id="@+id/passsword_su"

@@ -5,6 +5,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -12,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.SeekBar;
+import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -23,7 +25,17 @@ import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -35,6 +47,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private Circle circle;
     private int initialRange=60;
     private int maxRange=400;
+    FirebaseFirestore db;
+    private String client_geostory="";
+    private FirebaseUser currentClient;
+    private String clientID="";
+    private Intent intent;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,6 +84,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
             }
         });
+        Intent geointent=getIntent();
+        client_geostory=geointent.getStringExtra(Geocons.GEO_STORY);
+        db = FirebaseFirestore.getInstance();
+        currentClient = FirebaseAuth.getInstance().getCurrentUser() ;
+        clientID=currentClient.getUid();
     }
 
 
@@ -101,6 +125,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 mFusedLocationProviderClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
                     @Override
                     public void onSuccess(Location location) {
+
                         latitude=location.getLatitude();
                         longitude=location.getLongitude();
                         Log.d("Location",latitude+"******"+longitude);
@@ -130,11 +155,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        Intent intent=new Intent(this,MainActivity.class);
+        intent=new Intent(this,MainActivity.class);
         switch (item.getItemId()) {
             case R.id.post:
-                startActivity(intent);
-                finish();
+                postGeostory(initialRange,longitude,latitude,client_geostory);
                 return true;
             default:
                 return  super.onOptionsItemSelected(item);
@@ -151,8 +175,41 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
     public void postGeostory(int range, double longitude, double latitude, String story){
+        Log.d("Log","Start posting");
         //send range, point, story to fire base
+        Date postedTime = Calendar.getInstance().getTime();
+        Map<String,Object> geostory=new HashMap<>();
+        geostory.put(Geocons.CLIENT_ID,String.valueOf(clientID));
+        geostory.put(Geocons.GEO_LATITUDE,String.valueOf(latitude));
+        geostory.put(Geocons.GEO_LONGITUDE,String.valueOf(longitude));
+        geostory.put(Geocons.GEO_STORY,String.valueOf(story));
+        geostory.put(Geocons.POSTED_TIME,String.valueOf(postedTime));
+        geostory.put(Geocons.VISIBLE_RANGE,String.valueOf(range));
+        Log.d("Log","Start posting2");
 
+        db.collection(Geocons.DBcons.GEOSTORY_DB)
+                .add(geostory)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        Log.d("Log","Start posting3");
+
+                        Toast.makeText(getApplicationContext(),"Geostory Posted.",Toast.LENGTH_SHORT).show();
+                        startActivity(intent);
+                        finish();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d("Log","Start posting4");
+
+
+                        Toast.makeText(getApplicationContext(),"There was a issue during posting, please try again.",Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+        Log.d("Log","End posting");
     }
     public boolean checkCity(Location gps, Location point){
         //check if two location is the same city

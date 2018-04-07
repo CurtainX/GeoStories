@@ -1,17 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="192dp"
     android:background="?attr/colorPrimaryDark"
+    android:gravity="bottom"
+    android:orientation="horizontal"
     android:padding="16dp"
-    android:theme="@style/ThemeOverlay.AppCompat.Dark"
-    android:orientation="vertical"
-    android:gravity="bottom">
+    android:theme="@style/ThemeOverlay.AppCompat.Dark">
+
 
     <TextView
+        android:id="@+id/user_img_m"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:background="@drawable/ic_menu_camera"
+         />
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="My header title"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
+        android:layout_height="80dp"
+        android:orientation="vertical"
+        android:paddingLeft="8dp">
+
+        <TextView
+            android:id="@+id/username_m"
+            android:layout_width="match_parent"
+            android:layout_height="32dp"
+            android:text="Username" />
+
+        <TextView
+            android:id="@+id/about_m"
+            android:isScrollContainer="true"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="Information about the user posted here. It should be a short story format" />
+    </LinearLayout>
 
 </LinearLayout>
