@@ -1,6 +1,8 @@
 package com.example.shengx.geostories;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -17,12 +19,16 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class Login extends AppCompatActivity {
     EditText  email,password;
@@ -33,6 +39,11 @@ public class Login extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private final String TAG="Log";
     Intent intent;
+    SharedPreferences sharedPref;
+    SharedPreferences.Editor editor;
+    FirebaseFirestore db;
+    FirebaseUser current_client;
+
 
 
 
@@ -47,6 +58,12 @@ public class Login extends AppCompatActivity {
         signIn=(Button)findViewById(R.id.signin_si);
         signUp=(TextView)findViewById(R.id.create_acc_si);
         signwithFB=(Button)findViewById(R.id.sigin_w_fb_si);
+
+        sharedPref = getApplicationContext().getSharedPreferences("Client",0);
+        editor = sharedPref.edit();
+
+        db=FirebaseFirestore.getInstance();
+
         intent=new Intent(Login.this,MainActivity.class);
         // Configure sign-in to request the user's ID, email address, and basic
         // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
@@ -169,6 +186,26 @@ public class Login extends AppCompatActivity {
     }
 
     public void logedIn(){
+        current_client=FirebaseAuth.getInstance().getCurrentUser();
+
+        final SharedPreferences.Editor editor = sharedPref.edit();
+        db.collection("users").document(current_client.getUid().toString()).get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        if(documentSnapshot.exists()){
+                            editor.putString("username",documentSnapshot.get("username").toString());
+                            editor.putString("about",documentSnapshot.get("about").toString());
+                        }else {
+                            editor.putString("username","");
+                            editor.putString("about","");
+                        }
+
+                        editor.commit();
+                        Log.d("Log-----","Success");
+
+                    }
+                });
         startActivity(intent);
         finish();
     }

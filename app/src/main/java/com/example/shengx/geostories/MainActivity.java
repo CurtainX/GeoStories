@@ -1,13 +1,19 @@
 package com.example.shengx.geostories;
 
+import android.*;
+import android.Manifest;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -24,6 +30,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -68,6 +75,8 @@ public class MainActivity extends AppCompatActivity {
     private LocationRequest mLocationRequest;
     private LocationCallback mLocationCallback;
 
+
+    TextView userimage, username,userabout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -178,6 +187,20 @@ public class MainActivity extends AppCompatActivity {
                Log.d("Locaiton Client",locationAvailability.toString());
            }
        };
+       userabout=(TextView)navigationView.findViewById(R.id.about_m);
+       username=(TextView)navigationView.findViewById(R.id.username_m);
+       userimage=(TextView)navigationView.findViewById(R.id.user_img_m);
+        String photoPath = Environment.getExternalStorageDirectory()+"/Geo_Images/"+FirebaseAuth.getInstance().getCurrentUser().getUid()+".jpg";
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+        Bitmap bitmap = BitmapFactory.decodeFile(photoPath, options);
+
+        if(bitmap!=null){
+            BitmapDrawable ob=new BitmapDrawable(getResources(),bitmap);
+            userimage.setBackgroundDrawable(ob);
+        }
+        Log.d("Log","success-->");
+
     }
 
     public boolean checkLocationPermission() {
