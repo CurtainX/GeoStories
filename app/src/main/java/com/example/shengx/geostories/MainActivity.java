@@ -4,6 +4,7 @@ import android.*;
 import android.Manifest;
 import android.content.Intent;
 import android.content.IntentSender;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -77,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     TextView userimage, username,userabout;
-
+    SharedPreferences sharedPreferences;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -187,9 +188,10 @@ public class MainActivity extends AppCompatActivity {
                Log.d("Locaiton Client",locationAvailability.toString());
            }
        };
-       userabout=(TextView)navigationView.findViewById(R.id.about_m);
-       username=(TextView)navigationView.findViewById(R.id.username_m);
-       userimage=(TextView)navigationView.findViewById(R.id.user_img_m);
+        sharedPreferences=getApplicationContext().getSharedPreferences("Client",0);
+        userabout=(TextView)navigationView.getHeaderView(0).findViewById(R.id.about_m);
+        username=(TextView)navigationView.getHeaderView(0).findViewById(R.id.username_m);
+        userimage=(TextView)navigationView.getHeaderView(0).findViewById(R.id.user_img_m);
         String photoPath = Environment.getExternalStorageDirectory()+"/Geo_Images/"+FirebaseAuth.getInstance().getCurrentUser().getUid()+".jpg";
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
@@ -199,8 +201,26 @@ public class MainActivity extends AppCompatActivity {
             BitmapDrawable ob=new BitmapDrawable(getResources(),bitmap);
             userimage.setBackgroundDrawable(ob);
         }
+        username.setText(sharedPreferences.getString("username",""));
+        userabout.setText(sharedPreferences.getString("about",""));
         Log.d("Log","success-->");
 
+    }
+
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+        String photoPath = Environment.getExternalStorageDirectory()+"/Geo_Images/"+FirebaseAuth.getInstance().getCurrentUser().getUid()+".jpg";
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+        Bitmap bitmap = BitmapFactory.decodeFile(photoPath, options);
+
+        if(bitmap!=null){
+            BitmapDrawable ob=new BitmapDrawable(getResources(),bitmap);
+            userimage.setBackgroundDrawable(ob);
+        }
+        username.setText(sharedPreferences.getString("username",""));
+        userabout.setText(sharedPreferences.getString("about",""));
     }
 
     public boolean checkLocationPermission() {

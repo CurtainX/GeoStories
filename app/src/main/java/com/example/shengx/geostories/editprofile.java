@@ -23,6 +23,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -31,7 +32,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.shengx.geostories.ImageUtility.GallaryImage;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -132,22 +132,24 @@ public class editprofile extends AppCompatActivity {
         String mAbout=sharedPreferences.getString("about","").toString();
         username.setText(mUsrename);
         about.setText(mAbout);
+//
 
-        username.setOnClickListener(new View.OnClickListener() {
+        username.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View v) {
+            public boolean onTouch(View v, MotionEvent event) {
                 username.setCursorVisible(true);
                 username.setText("");
                 username.setBackgroundColor(Color.argb(50,180,180,180));
+                return false;
             }
         });
-        about.setOnClickListener(new View.OnClickListener() {
+        about.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View v) {
+            public boolean onTouch(View v, MotionEvent event) {
                 about.setCursorVisible(true);
                 about.setText("");
                 about.setBackgroundColor(Color.argb(50,180,180,180));
-
+                return false;
             }
         });
         gsReference = storage.getReferenceFromUrl("gs://geostories-87738.appspot.com/"+current_client.getUid()+".jpg");
@@ -232,7 +234,27 @@ public class editprofile extends AppCompatActivity {
                     public void onSuccess(QuerySnapshot documentSnapshots) {
                         if(documentSnapshots.size()>0){
                             if(documentSnapshots.getDocuments().get(0).getId().toString().equals(FirebaseAuth.getInstance().getUid().toString())){
-                                Toast.makeText(getApplicationContext(),"Saved.",Toast.LENGTH_SHORT).show();
+
+                                    db.collection(Geocons.DBcons.USER_DB)
+                                            .document(current_client.getUid())
+                                            .set(user)
+                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void aVoid) {
+                                                    editor.putString("username",username.getText().toString());
+                                                    editor.putString("about",about.getText().toString());
+                                                    editor.commit();
+                                                    Toast.makeText(getApplicationContext(),"Updated.",Toast.LENGTH_SHORT).show();
+                                                }
+                                            })
+                                            .addOnFailureListener(new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e) {
+                                                    Toast.makeText(getApplicationContext(),"Failure",Toast.LENGTH_SHORT).show();
+                                                }
+                                            });
+                                
+
                             }
                             else {
                                 Toast.makeText(getApplicationContext(),"Username Exists!",Toast.LENGTH_SHORT).show();
