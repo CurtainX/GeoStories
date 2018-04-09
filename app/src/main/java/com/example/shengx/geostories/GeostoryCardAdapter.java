@@ -1,5 +1,8 @@
 package com.example.shengx.geostories;
 
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -19,13 +22,14 @@ import java.util.List;
 
 public class GeostoryCardAdapter extends RecyclerView.Adapter<GeostoryCardAdapter.GeostoryHolder> {
     List<Geostory> mGeostories;
-    ImageButton profileImage;
+    ImageView profileImage;
     TextView username, datePosted, geostory;
     ImageView geostoryImage;
     Button like, comment,dismiss;
-
-    public GeostoryCardAdapter(List<Geostory> mGeostories) {
+    Context context;
+    public GeostoryCardAdapter(List<Geostory> mGeostories, Context context) {
         this.mGeostories = mGeostories;
+        this.context=context;
     }
 
     @Override
@@ -37,11 +41,13 @@ public class GeostoryCardAdapter extends RecyclerView.Adapter<GeostoryCardAdapte
 
     @Override
     public void onBindViewHolder(GeostoryHolder holder, int position) {
-        profileImage.setImageResource(R.drawable.ic_menu_camera);
+        Bitmap profile_image=mGeostories.get(position).getProfile_image();
+        Bitmap story_image=mGeostories.get(position).getStory_image();
+        profileImage.setImageBitmap(profile_image);
         username.setText(mGeostories.get(position).getUsername());
         datePosted.setText(mGeostories.get(position).getDatePosted());
         geostory.setText(mGeostories.get(position).getGeostory());
-        geostoryImage.setImageResource(R.drawable.ic_menu_camera);
+        geostoryImage.setImageBitmap(story_image);
         like.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -71,7 +77,7 @@ public class GeostoryCardAdapter extends RecyclerView.Adapter<GeostoryCardAdapte
 
         public GeostoryHolder(View itemView) {
             super(itemView);
-            profileImage=(ImageButton)itemView.findViewById(R.id.profileImage_cd);
+            profileImage=(ImageView) itemView.findViewById(R.id.profileImage_cd);
             username=(TextView)itemView.findViewById(R.id.username_cd);
             datePosted=(TextView)itemView.findViewById(R.id.dateposted_cd);
             geostory=(TextView)itemView.findViewById(R.id.geostory_cd);

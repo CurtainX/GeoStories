@@ -12,19 +12,36 @@ public class Geostory {
     String username;
     String datePosted;
     String geostory;
+    String storyID;
+    String latitude;
+    String longitude;
 
-    public Geostory(Bitmap profile_image, Bitmap story_image, String username, String datePosted, String geostory) {
+    public Geostory( String storyID,Bitmap profile_image, Bitmap story_image, String username, String datePosted, String geostory, String latitude, String longitude) {
         this.profile_image = profile_image;
         this.story_image = story_image;
         this.username = username;
         this.datePosted = datePosted;
         this.geostory = geostory;
+        this.storyID = storyID;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
-    public Geostory(String username, String datePosted, String geostory) {
+    public Geostory( String storyID,Bitmap profile_image, Bitmap story_image, String username, String datePosted, String geostory) {
+        this.profile_image = profile_image;
+        this.story_image = story_image;
         this.username = username;
         this.datePosted = datePosted;
         this.geostory = geostory;
+        this.storyID=storyID;
+    }
+
+    public Geostory( String storyID, String username, String datePosted, String geostory) {
+        this.username = username;
+        this.datePosted = datePosted;
+        this.geostory = geostory;
+        this.storyID=storyID;
+
     }
 
     public Bitmap getProfile_image() {
@@ -65,5 +82,29 @@ public class Geostory {
 
     public void setGeostory(String geostory) {
         this.geostory = geostory;
+    }
+
+    public String getStoryID() {
+        return storyID;
+    }
+
+    public void setStoryID(String storyID) {
+        this.storyID = storyID;
+    }
+
+    public String getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(String latitude) {
+        this.latitude = latitude;
+    }
+
+    public String getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(String longitude) {
+        this.longitude = longitude;
     }
 }

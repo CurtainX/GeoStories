@@ -305,7 +305,6 @@ public class editprofile extends AppCompatActivity {
                         editor.commit();
                         Intent firstTimeLoginCompleted=new Intent(this,MainActivity.class);
                         startActivity(firstTimeLoginCompleted);
-                        finish();
                     }
                 }
                 else {
