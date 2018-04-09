@@ -9,7 +9,9 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
+import android.location.Address;
 import android.location.Criteria;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -48,16 +50,21 @@ import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
     RecyclerView geostoryList;
@@ -79,6 +86,11 @@ public class MainActivity extends AppCompatActivity {
 
     TextView userimage, username,userabout;
     SharedPreferences sharedPreferences;
+
+
+
+    FirebaseFirestore db;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -89,6 +101,8 @@ public class MainActivity extends AppCompatActivity {
 
         mFusedLocationProviderClient= LocationServices.getFusedLocationProviderClient(this);
 
+
+        db=FirebaseFirestore.getInstance();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -114,9 +128,7 @@ public class MainActivity extends AppCompatActivity {
         final LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         geostoryList.setLayoutManager(layoutManager);
         mGeostories = new ArrayList<Geostory>();
-        for (int i = 0; i < 10; i++) {
-            mGeostories.add(new Geostory("Test user 1" + i, "12/10/" + i, i + " :story-->141251"));
-        }
+
         geostoryCardAdapter = new GeostoryCardAdapter(mGeostories);
         geostoryList.setAdapter(geostoryCardAdapter);
 
@@ -179,6 +191,7 @@ public class MainActivity extends AppCompatActivity {
            public void onLocationResult(LocationResult locationResult) {
                super.onLocationResult(locationResult);
                clientLocation=locationResult.getLastLocation();
+
                Log.d("Locaiton Client",clientLocation.getLatitude()+"$$$$$"+clientLocation.getLongitude());
            }
 
@@ -265,6 +278,8 @@ public class MainActivity extends AppCompatActivity {
                             }else{
                                 Log.d("Location Client","Client has Last location");
                                 clientLocation=location;
+                                getStoies();
+
                             }
                         }
                     });
@@ -367,6 +382,68 @@ public class MainActivity extends AppCompatActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+
+
+
+    public void getStoies(){
+        Log.d("Log---Main--testing","Called");
+
+        Geocoder gcd=new Geocoder(getApplicationContext(), Locale.getDefault());
+        String mclient_city;
+        try{
+            List<Address> client_city=gcd.getFromLocation(clientLocation.getLatitude(),clientLocation.getLongitude(),1);
+            mclient_city=client_city.get(0).getLocality();
+//            db.collection(Geocons.DBcons.GEOSTORY_DB)
+//                    .whereEqualTo(Geocons.STORY_CITY,mclient_city)
+//                    .get()
+//                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+//                        @Override
+//                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+//                            for(DocumentSnapshot story:task.getResult().getDocuments()){
+//                                Log.d("Log---Main--testing",story.getId()+story.get("geostory"));
+//                                downloadedGeostories.add(new Geostory(String.valueOf(story.get("client_id")),String.valueOf(story.get("posted_time")),String.valueOf(story.get("geostory"))));
+//                            }
+//                            geostoryCardAdapter = new GeostoryCardAdapter(downloadedGeostories);
+//                            geostoryList.setAdapter(geostoryCardAdapter);
+//                        }
+//                    })
+//                    .addOnFailureListener(new OnFailureListener() {
+//                        @Override
+//                        public void onFailure(@NonNull Exception e) {
+//                            Log.d("Log---Main--testing","Failed");
+//                        }
+//                    });
+
+            db.collection(Geocons.DBcons.GEOSTORY_DB)
+                    .whereEqualTo(Geocons.STORY_CITY,mclient_city)
+                    .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                        @Override
+                        public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+                            List<Geostory> downloadedGeostories=new ArrayList<Geostory>();
+                            if (e != null) {
+                                Log.w(TAG, "Listen failed.", e);
+                                return;
+                            }
+
+                            for (DocumentSnapshot story : documentSnapshots) {
+                                if (story.getId()!= null) {
+                                    downloadedGeostories.add(new Geostory(String.valueOf(story.get("client_id")),String.valueOf(story.get("posted_time")),String.valueOf(story.get("geostory"))));
+                                    Log.d(TAG,story.getId());
+                                }
+                            }
+                            geostoryCardAdapter = new GeostoryCardAdapter(downloadedGeostories);
+                            geostoryList.setAdapter(geostoryCardAdapter);
+                            Log.d(TAG, "story set");
+                        }
+                    });
+
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+
     }
 
 }

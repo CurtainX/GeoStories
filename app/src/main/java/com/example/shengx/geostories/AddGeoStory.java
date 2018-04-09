@@ -1,12 +1,25 @@
 package com.example.shengx.geostories;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Build;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -15,12 +28,31 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.UploadTask;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 public class AddGeoStory extends AppCompatActivity {
     Intent intent;
     EditText geostoryin;
+    private final int GALLERY_REQUEST=100;
+    ImageButton photo_from_gallary;
+    TextView story_image_prev;
+    Bitmap bitmap;
+    File storagePath,myFile;
+    Boolean withPhoto=false;
+    private int REQ_W_STORAGE_CODE=200;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,9 +95,51 @@ public class AddGeoStory extends AppCompatActivity {
                 return true;
             }
         });
+        story_image_prev=(TextView)findViewById(R.id.prev_story_photo);
+        photo_from_gallary=(ImageButton)findViewById(R.id.story_photo_gallary);
+        photo_from_gallary.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(isStoragePermissionGranted()){
+                    Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+                    photoPickerIntent.setType("image/*");
+                    startActivityForResult(photoPickerIntent, GALLERY_REQUEST);
+                }
+            }
+        });
+
+        storagePath = new File(Environment.getExternalStorageDirectory(), "Geo_Images");
+        // Create direcorty if not exists
+        if(!storagePath.exists()) {
+            storagePath.mkdirs();
+            Log.d("log---G","Geo file created");
+        }
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode == Activity.RESULT_OK)
+            switch (requestCode) {
+                case GALLERY_REQUEST:
+                    Uri selectedImage = data.getData();
+                    try {
+                        bitmap = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), selectedImage);
+                        Log.d("Log--size",bitmap.getByteCount()+"");
+                        myFile = new File(storagePath,"story.jpg");
+                        FileOutputStream fileOutputStream=new FileOutputStream(myFile);
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 0, fileOutputStream);
+                        BitmapDrawable ob = new BitmapDrawable(getResources(), bitmap);
+                        story_image_prev.setBackgroundDrawable(ob);
+                        withPhoto=true;
 
+                        Log.d("TAG", "Success");
+                    } catch (IOException e) {
+                        Log.i("TAG", "Some exception " + e);
+                    }
+                    break;
+            }
+    }
 
     @Override
     public boolean onCreatePanelMenu(int featureId, Menu menu) {
@@ -84,11 +158,45 @@ public class AddGeoStory extends AppCompatActivity {
                 else {
                         String mGeostory=geostoryin.getText().toString();
                         intent.putExtra(Geocons.GEO_STORY,mGeostory);
+                        intent.putExtra(Geocons.GEO_STORY_PHOTO_YES_NO,withPhoto);
                         startActivity(intent);
                 }
                 return true;
             default:
                 return  super.onOptionsItemSelected(item);
+        }
+    }
+
+    public  boolean isStoragePermissionGranted() {
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    == PackageManager.PERMISSION_GRANTED) {
+                Log.v("Log--p","Permission is granted");
+                return true;
+            } else {
+
+                Log.v("Log--p","Permission is revoked");
+                ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE},REQ_W_STORAGE_CODE );
+                return false;
+            }
+        }
+        else { //permission is automatically granted on sdk<23 upon installation
+            Log.v("Log--p","Permission is granted");
+            return true;
+        }
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if(grantResults[0]== PackageManager.PERMISSION_GRANTED){
+            Log.v("Log--p","Permission: "+permissions[0]+ "was "+grantResults[0]);
+            //resume tasks needing this permission
+            Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+            photoPickerIntent.setType("image/*");
+            startActivityForResult(photoPickerIntent, GALLERY_REQUEST);
+        }
+        else {
+            Toast.makeText(getApplicationContext(),"Please grant the permission to continue",Toast.LENGTH_SHORT).show();
         }
     }
 

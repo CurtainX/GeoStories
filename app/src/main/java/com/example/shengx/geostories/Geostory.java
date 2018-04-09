@@ -1,15 +1,25 @@
 package com.example.shengx.geostories;
 
+import android.graphics.Bitmap;
+
 /**
  * Created by SHENG.X on 2018-03-22.
  */
 
 public class Geostory {
-    String profileImgUrl;
+    Bitmap profile_image;
+    Bitmap story_image;
     String username;
     String datePosted;
     String geostory;
-    String geostoryImageUrl;
+
+    public Geostory(Bitmap profile_image, Bitmap story_image, String username, String datePosted, String geostory) {
+        this.profile_image = profile_image;
+        this.story_image = story_image;
+        this.username = username;
+        this.datePosted = datePosted;
+        this.geostory = geostory;
+    }
 
     public Geostory(String username, String datePosted, String geostory) {
         this.username = username;
@@ -17,21 +27,20 @@ public class Geostory {
         this.geostory = geostory;
     }
 
-    public Geostory(String profileImgUrl, String username, String datePosted, String geostory, String geostoryImageUrl) {
-
-        this.profileImgUrl = profileImgUrl;
-        this.username = username;
-        this.datePosted = datePosted;
-        this.geostory = geostory;
-        this.geostoryImageUrl = geostoryImageUrl;
+    public Bitmap getProfile_image() {
+        return profile_image;
     }
 
-    public String getProfileImgUrl() {
-        return profileImgUrl;
+    public void setProfile_image(Bitmap profile_image) {
+        this.profile_image = profile_image;
     }
 
-    public void setProfileImgUrl(String profileImgUrl) {
-        this.profileImgUrl = profileImgUrl;
+    public Bitmap getStory_image() {
+        return story_image;
+    }
+
+    public void setStory_image(Bitmap story_image) {
+        this.story_image = story_image;
     }
 
     public String getUsername() {
@@ -56,13 +65,5 @@ public class Geostory {
 
     public void setGeostory(String geostory) {
         this.geostory = geostory;
-    }
-
-    public String getGeostoryImageUrl() {
-        return geostoryImageUrl;
-    }
-
-    public void setGeostoryImageUrl(String geostoryImageUrl) {
-        this.geostoryImageUrl = geostoryImageUrl;
     }
 }

@@ -58,7 +58,6 @@ public class editprofile extends AppCompatActivity {
     EditText username, about;
     FirebaseUser current_client;
     FirebaseFirestore db;
-    DocumentReference docRef;
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
     TextView replace_profile_img;
@@ -253,7 +252,7 @@ public class editprofile extends AppCompatActivity {
                                                     Toast.makeText(getApplicationContext(),"Failure",Toast.LENGTH_SHORT).show();
                                                 }
                                             });
-                                
+
 
                             }
                             else {
@@ -297,7 +296,21 @@ public class editprofile extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.saveprofile:
-                updateUserProfile();
+                if(sharedPreferences.getInt("firstTimeSignin",1)==1){
+                    if(username.getText().toString().trim().length()==0){
+                        Toast.makeText(getApplicationContext(),"Please enter your username to continue.",Toast.LENGTH_SHORT).show();
+                    }else {
+                        updateUserProfile();
+                        editor.putInt("firstTimeSignin",0);
+                        editor.commit();
+                        Intent firstTimeLoginCompleted=new Intent(this,MainActivity.class);
+                        startActivity(firstTimeLoginCompleted);
+                        finish();
+                    }
+                }
+                else {
+                    updateUserProfile();
+                }
                 return true;
             default:
                 return  super.onOptionsItemSelected(item);
@@ -322,7 +335,7 @@ public class editprofile extends AppCompatActivity {
                         profile_img.setBackgroundDrawable(ob);
 
                         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                        bitmap.compress(Bitmap.CompressFormat.JPEG, 5, baos);
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 0, baos);
                         byte[] mData = baos.toByteArray();
                         mountainsRef = storageRef.child(current_client.getUid()+".jpg");
                         UploadTask uploadTask = mountainsRef.putBytes(mData);

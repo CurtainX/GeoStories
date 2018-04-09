@@ -9,26 +9,77 @@
     app:layout_insetEdge="left"
     tools:context="com.example.shengx.geostories.AddGeoStory">
 
-    <EditText
-        android:id="@+id/geostory_input"
-        style="@style/Widget.AppCompat.Light.AutoCompleteTextView"
+    <android.support.constraint.ConstraintLayout
         android:layout_width="348dp"
-        android:layout_height="145dp"
+        android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:background="@layout/my_edit_text_border"
-        android:gravity="top|center"
-        android:hint="Add a geostory"
-        android:padding="10dp"
-        android:inputType="text|textMultiLine"
-        android:singleLine="false"
-        android:imeOptions="actionDone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.489"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.091" />
+        app:layout_constraintVertical_bias="0.129">
+
+        <EditText
+            android:id="@+id/geostory_input"
+            style="@style/Widget.AppCompat.Light.AutoCompleteTextView"
+            android:layout_width="348dp"
+            android:layout_height="145dp"
+            android:background="@layout/my_edit_text_border"
+            android:gravity="top|center"
+            android:hint="Add a geostory"
+            android:imeOptions="actionDone"
+            android:inputType="text|textMultiLine"
+            android:padding="10dp"
+            android:singleLine="false"
+            tools:layout_editor_absoluteX="1dp"
+            tools:layout_editor_absoluteY="29dp" />
+
+        <ImageButton
+            android:id="@+id/story_photo_gallary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:theme="@style/Base.TextAppearance.AppCompat"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.971"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/geostory_input"
+            app:srcCompat="@drawable/ic_camera_white_24dp" />
+
+        <TextView
+            android:id="@+id/prev_story_photo"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignTop="@+id/story_photo_camera"
+            android:layout_marginEnd="8dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintEnd_toStartOf="@+id/story_photo_camera"
+            app:layout_constraintHorizontal_bias="0.049"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/geostory_input" />
+
+        <ImageButton
+            android:id="@+id/story_photo_camera"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_toLeftOf="@+id/story_photo_gallary"
+            android:layout_toStartOf="@+id/story_photo_gallary"
+            app:layout_constraintEnd_toStartOf="@+id/story_photo_gallary"
+            app:layout_constraintTop_toBottomOf="@+id/geostory_input"
+            app:srcCompat="@drawable/ic_add_a_photo_white_24dp" />
+    </android.support.constraint.ConstraintLayout>
 
 </android.support.constraint.ConstraintLayout>

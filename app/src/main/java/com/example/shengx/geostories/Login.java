@@ -206,8 +206,16 @@ public class Login extends AppCompatActivity {
 
                     }
                 });
-        startActivity(intent);
-        finish();
+        if(sharedPref.getInt("firstTimeSignin",1)==1){
+            Intent firstTimeLogin=new Intent(this, editprofile.class);
+            startActivity(firstTimeLogin);
+            finish();
+        }
+        else {
+            startActivity(intent);
+            finish();
+        }
+
     }
 
 }
