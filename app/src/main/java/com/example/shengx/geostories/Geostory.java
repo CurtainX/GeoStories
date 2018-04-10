@@ -15,6 +15,7 @@ public class Geostory {
     String storyID;
     String latitude;
     String longitude;
+    String clientID;
 
     public Geostory( String storyID,Bitmap profile_image, Bitmap story_image, String username, String datePosted, String geostory, String latitude, String longitude) {
         this.profile_image = profile_image;
@@ -27,13 +28,14 @@ public class Geostory {
         this.longitude = longitude;
     }
 
-    public Geostory( String storyID,Bitmap profile_image, Bitmap story_image, String username, String datePosted, String geostory) {
+    public Geostory( String storyID, String clientID,Bitmap profile_image, Bitmap story_image, String username, String datePosted, String geostory) {
         this.profile_image = profile_image;
         this.story_image = story_image;
         this.username = username;
         this.datePosted = datePosted;
         this.geostory = geostory;
         this.storyID=storyID;
+        this.clientID=clientID;
     }
 
     public Geostory( String storyID, String username, String datePosted, String geostory) {
@@ -42,6 +44,14 @@ public class Geostory {
         this.geostory = geostory;
         this.storyID=storyID;
 
+    }
+
+    public String getClientID() {
+        return clientID;
+    }
+
+    public void setClientID(String clientID) {
+        this.clientID = clientID;
     }
 
     public Bitmap getProfile_image() {

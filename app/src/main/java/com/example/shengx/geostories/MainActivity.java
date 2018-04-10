@@ -107,6 +107,8 @@ public class MainActivity extends AppCompatActivity {
 
     List<Geostory> downloadedGeostories_image1,downloadedGeostories_image2;
 
+    int profile_image_counter=0,story_image_counter=0;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -466,192 +468,32 @@ public class MainActivity extends AppCompatActivity {
                             }
 
 
-                            for (final DocumentSnapshot story : documentSnapshots) {
+                            for (DocumentSnapshot story : documentSnapshots) {
                                 if (story.getId()!= null) {
                                     story_ids.add(String.valueOf(story.getId()));
                                     client_ids.add(String.valueOf(story.get(Geocons.CLIENT_ID)));
                                     posted_dates.add(String.valueOf(story.get(Geocons.POSTED_TIME)));
                                     storys.add(String.valueOf(story.get(Geocons.GEO_STORY)));
-
-
-                                    db.collection(Geocons.DBcons.USER_DB)
-                                            .document(String.valueOf(story.get(Geocons.CLIENT_ID)))
-                                            .get()
-                                            .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                                                      @Override
-                                                                      public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                                                          client_names.add(documentSnapshot.get("username").toString());
-                                                                          Log.d("Log--name",documentSnapshot.get("username").toString());
-                                                                          Log.d("Log----check", documentSnapshot.get("username").toString());
-                                                                          int index=client_names.size()-1;
-                                                                          downloadedGeostories_image1.add(new Geostory(story_ids.get(index),
-                                                                                                            null,
-                                                                                                            null,
-                                                                                  documentSnapshot.get("username").toString(),
-                                                                                                            posted_dates.get(index),storys.get(index)));
-                                                                          geostoryCardAdapter=new GeostoryCardAdapter(downloadedGeostories_image1,getApplicationContext());
-                                                                          geostoryList.setAdapter(geostoryCardAdapter);
-                                                                      }
-                                            });
+                                    client_names.add(String.valueOf(story.get(Geocons.CLIENT_NAME)));
 
                                     Log.d("Log----check@@@",story.getId()+".jpg");
 
-//                                    gsReference_profile_img = storage.getReferenceFromUrl("gs://geostories-87738.appspot.com/"+story.get(Geocons.CLIENT_ID)+".jpg");
-//                                    gsReference_profile_img.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-//                                        @Override
-//                                        public void onSuccess(byte[] bytes) {
-//                                            // Data for "images/island.jpg" is returns, use this as needed
-//                                            if(bytes.length!=0) {
-//                                                BitmapFactory.Options options = new BitmapFactory.Options();
-//                                                options.inMutable = true;
-//                                                Bitmap bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length, options);
-//                                                int index=profile_images.size();
-//                                                profile_images.add(bmp);
-//                                                downloadedGeostories_image1.get(index).setProfile_image(bmp);
-//                                                Log.d("Log-chec", "success story image downloaded++>> " + story_images.size());
-//                                                Log.d("Log---count","c1 "+storys.size()+" %%%c2 "+profile_images.size());
-//
-//                                                        geostoryCardAdapter=new GeostoryCardAdapter(downloadedGeostories_image1,getApplicationContext());
-//                                                        geostoryList.setAdapter(geostoryCardAdapter);
-//
-//                                                }
-//
-//                                            }
-//                                    }).addOnFailureListener(new OnFailureListener() {
-//                                        @Override
-//                                        public void onFailure(@NonNull Exception exception) {
-//                                            // Handle any errors
-//                                            Log.d("Log","No ~!!success222");
-//                                            Drawable d = getResources().getDrawable(R.drawable.ic_camera_black_24dp);
-//                                            Bitmap bitmap = ((BitmapDrawable)d).getBitmap();
-//                                            story_images.add(bitmap);
-//
-//                                        }
-//                                    });
-//
 
-
-//                                    gsReference_story_img = storage.getReferenceFromUrl("gs://geostories-87738.appspot.com/"+story_ids.get(profile_images.size()-1)+".jpg");
-//                                    gsReference_story_img.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-//                                        @Override
-//                                        public void onSuccess(byte[] bytes) {
-//                                            // Data for "images/island.jpg" is returns, use this as needed
-//                                            if(bytes.length!=0) {
-//                                                BitmapFactory.Options options = new BitmapFactory.Options();
-//                                                options.inMutable = true;
-//                                                Bitmap bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length, options);
-//                                                int index3 = story_images.size();
-//                                                story_images.add(bmp);
-//                                                Log.d("Log-chec", "success story image downloaded" + story_images.size());
-//
-//                                                if(profile_images.size()==story_images.size()){
-//                                                    for(int index=0;index<profile_images.size();index++){
-//                                                        downloadedGeostories_image1.add(new Geostory(story_ids.get(index),
-//                                                                profile_images.get(index),
-//                                                                story_images.get(index),
-//                                                                client_names.get(index),
-//                                                                posted_dates.get(index),storys.get(index)
-//                                                        ));
-//                                                        geostoryCardAdapter=new GeostoryCardAdapter(downloadedGeostories_image1,getApplicationContext());
-//                                                        geostoryList.setAdapter(geostoryCardAdapter);
-//                                                    }
-//                                                }
-//
-//                                            }
-//                                        }
-//                                    }).addOnFailureListener(new OnFailureListener() {
-//                                        @Override
-//                                        public void onFailure(@NonNull Exception exception) {
-//                                            // Handle any errors
-//                                            Log.d("Log","No ~!!success222");
-//                                            Drawable d = getResources().getDrawable(R.drawable.ic_camera_black_24dp);
-//                                            Bitmap bitmap = ((BitmapDrawable)d).getBitmap();
-//                                            int index4=story_images.size();
-//                                            story_images.add(bitmap);
-//
-//                                        }
-//                                    });
-
-//
-//                                    gsReference_story_img.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-//                                        @Override
-//                                        public void onSuccess(byte[] bytes) {
-//                                            // Data for "images/island.jpg" is returns, use this as needed
-//                                            if(bytes.length!=0){
-//                                                BitmapFactory.Options options = new BitmapFactory.Options();
-//                                                options.inMutable = true;
-//                                                Bitmap bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length, options);
-//                                                int index3=story_images.size();
-//                                                story_images.add(bmp);
-//                                                Log.d("Log-chec","success story image downloaded"+story_images.size());
-//                                                if(downloadedGeostories_image1==null){
-//                                                    downloadedGeostories_image1.add(new Geostory(story_ids.get(index3),
-//                                                            profile_images.get(index3),
-//                                                            story_images.get(index3),
-//                                                            client_names.get(index3),
-//                                                            posted_dates.get(index3),storys.get(index3)
-//                                                    ));
-//                                                    geostoryCardAdapter=new GeostoryCardAdapter(downloadedGeostories_image1,getApplicationContext());
-//                                                    geostoryList.setAdapter(geostoryCardAdapter);
-//
-//                                                }
-//                                                else if(downloadedGeostories_image1.get(index3)==null){
-//                                                    downloadedGeostories_image1.add(new Geostory(story_ids.get(index3),
-//                                                            profile_images.get(index3),
-//                                                            story_images.get(index3),
-//                                                            client_names.get(index3),
-//                                                            posted_dates.get(index3),storys.get(index3)
-//                                                    ));
-//                                                    geostoryCardAdapter=new GeostoryCardAdapter(downloadedGeostories_image1,getApplicationContext());
-//                                                    geostoryList.setAdapter(geostoryCardAdapter);
-//
-//                                                }
-//                                                else {
-//                                                    downloadedGeostories_image1.get(index3).setStory_image(profile_images.get(index3));
-//                                                    geostoryCardAdapter=new GeostoryCardAdapter(downloadedGeostories_image1,getApplicationContext());
-//                                                    geostoryList.setAdapter(geostoryCardAdapter);
-//                                                }
-//                                            }
-//                                        }
-//                                    }).addOnFailureListener(new OnFailureListener() {
-//                                        @Override
-//                                        public void onFailure(@NonNull Exception exception) {
-//                                            // Handle any errors
-//                                            Log.d("Log","No ~!!success222");
-//                                            Drawable d = getResources().getDrawable(R.drawable.ic_camera_black_24dp);
-//                                            Bitmap bitmap = ((BitmapDrawable)d).getBitmap();
-//                                            int index4=story_images.size();
-//                                            story_images.add(bitmap);
-//                                            if(downloadedGeostories_image1.get(index4)==null){
-//                                                downloadedGeostories_image1.add(new Geostory(story_ids.get(index4),
-//                                                        profile_images.get(index4),
-//                                                        story_images.get(index4),
-//                                                        client_names.get(index4),
-//                                                        posted_dates.get(index4),storys.get(index4)
-//                                                ));
-//                                                geostoryCardAdapter=new GeostoryCardAdapter(downloadedGeostories_image1,getApplicationContext());
-//                                                geostoryList.setAdapter(geostoryCardAdapter);
-//
-//                                            }else {
-//                                                downloadedGeostories_image1.get(index4).setStory_image(profile_images.get(index4));
-//                                                geostoryCardAdapter=new GeostoryCardAdapter(downloadedGeostories_image1,getApplicationContext());
-//                                                geostoryList.setAdapter(geostoryCardAdapter);
-//                                            }
-//                                        }
-//                                    });
-
+                                    downloadedGeostories_image1.add(new Geostory(String.valueOf(story.getId()),
+                                                                String.valueOf(story.get(Geocons.CLIENT_ID)),
+                                                                null,
+                                                                null,
+                                            String.valueOf(story.get(Geocons.CLIENT_NAME)),
+                                            String.valueOf(story.get(Geocons.POSTED_TIME)),String.valueOf(story.get(Geocons.GEO_STORY))
+                                                        ));
+                                    
                                 }
-                            }
-//                            for(int i=0;i<storys.size();i++){
-//                                downloadedGeostories_image1.add(new Geostory(story_ids.get(i),
-//                                        profile_images.get(i),
-//                                        story_images.get(i),
-//                                        client_names.get(i),
-//                                        posted_dates.get(i),storys.get(i)
-//                                        ));
-//                            }
 
-                            Log.d("Log----check---point",story_ids.size()+"@@@@@@@@@@"+storys.size());
+                            }
+
+                            geostoryCardAdapter=new GeostoryCardAdapter(downloadedGeostories_image1,getApplicationContext());
+                            geostoryList.setAdapter(geostoryCardAdapter);
+                            Log.d("Logcheck---point",story_ids.size()+"@@@@@@@@@@"+storys.size());
                             Log.d(TAG, "story set");
                         }
                     });

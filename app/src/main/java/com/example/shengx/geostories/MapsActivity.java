@@ -1,6 +1,7 @@
 package com.example.shengx.geostories;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -74,6 +75,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     FirebaseStorage storage;
     StorageReference storageRef;
     StorageReference mountainsRef;
+    SharedPreferences sharedPreferences;
 
 
     @Override
@@ -131,6 +133,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             Log.d("Log--111","No Image ");
 
         }
+        sharedPreferences=getApplicationContext().getSharedPreferences("Client",0);
     }
 
 
@@ -256,6 +259,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     geostory.put(Geocons.POSTED_TIME,String.valueOf(postedTime));
                     geostory.put(Geocons.VISIBLE_RANGE,String.valueOf(range));
                     geostory.put(Geocons.STORY_CITY,String.valueOf(cityname));
+                    geostory.put(Geocons.CLIENT_NAME,sharedPreferences.getString("username",""));
                     Log.d("Log","Start posting2");
 
                     db.collection(Geocons.DBcons.GEOSTORY_DB)
