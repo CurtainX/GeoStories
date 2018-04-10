@@ -68,10 +68,13 @@ public class GeostoryCardAdapter extends RecyclerView.Adapter<GeostoryCardAdapte
         username.setText(mGeostories.get(position).getUsername());
         datePosted.setText(mGeostories.get(position).getDatePosted());
         geostory.setText(mGeostories.get(position).getGeostory());
+        final String storyID,clientID;
+        storyID=mGeostories.get(position).getStoryID();
+        clientID=mGeostories.get(position).getClientID();
         like.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(v.getContext(),"Liked",Toast.LENGTH_LONG).show();
+                StoryControlUtility.likeStory(storyID,clientID,like,context);
             }
         });
         comment.setOnClickListener(new View.OnClickListener() {
@@ -117,6 +120,19 @@ public class GeostoryCardAdapter extends RecyclerView.Adapter<GeostoryCardAdapte
 //                                            Drawable d = context.getResources().getDrawable(R.drawable.ic_camera_black_24dp);
 //                                            Bitmap bitmap = ((BitmapDrawable)d).getBitmap();
 //                                            profileImage.setImageBitmap(null);
+                                            gsReference_profile_img.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                                                @Override
+                                                public void onSuccess(byte[] bytes) {
+                                                    // Data for "images/island.jpg" is returns, use this as needed
+                                                    if(bytes.length!=0) {
+                                                        BitmapFactory.Options options = new BitmapFactory.Options();
+                                                        options.inMutable = true;
+                                                        Bitmap bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length, options);
+                                                        profileImage.setImageBitmap(bmp);
+                                                        Log.d("Log-chec", "success story image downloaded" + bmp.getByteCount());
+                                                    }
+                                                }
+                                            });
 
                                         }
                                     });
@@ -141,7 +157,7 @@ public class GeostoryCardAdapter extends RecyclerView.Adapter<GeostoryCardAdapte
             @Override
             public void onFailure(@NonNull Exception exception) {
                 // Handle any errors
-                Log.d("Log","No ~!!success222");
+                Log.d("Log22","No ~!!success222");
 //                Drawable d = context.getResources().getDrawable(R.drawable.ic_camera_black_24dp);
 //                Bitmap bitmap = ((BitmapDrawable)d).getBitmap();
 //                storyImage.setImageBitmap(null);

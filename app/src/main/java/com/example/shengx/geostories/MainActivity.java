@@ -159,6 +159,9 @@ public class MainActivity extends AppCompatActivity {
         geostoryList.setLayoutManager(layoutManager);
         mGeostories = new ArrayList<Geostory>();
 
+        geostoryList.setItemViewCacheSize(5);
+        geostoryList.setNestedScrollingEnabled(false);
+
         geostoryCardAdapter = new GeostoryCardAdapter(mGeostories,this);
         geostoryList.setAdapter(geostoryCardAdapter);
 
@@ -196,7 +199,7 @@ public class MainActivity extends AppCompatActivity {
                             case R.id.nav_signout:
                                 FirebaseAuth.getInstance().signOut();
                                 Intent intent = new Intent(getApplicationContext(), Login.class);
-                                
+
                                 startActivity(intent);
                                 break;
                             case R.id.nav_editprofile:
@@ -248,6 +251,7 @@ public class MainActivity extends AppCompatActivity {
         username.setText(sharedPreferences.getString("username",""));
         userabout.setText(sharedPreferences.getString("about",""));
         Log.d("Log","success-->");
+
 
     }
 
