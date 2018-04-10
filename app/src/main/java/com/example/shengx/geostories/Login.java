@@ -33,7 +33,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 public class Login extends AppCompatActivity {
     EditText  email,password;
     TextView signUp;
-    Button signIn,signwithFB;
+    Button signIn,signwithGoogle;
     GoogleSignInClient mGoogleSignInClient;
     private final int RC_SIGN_IN=100;
     private FirebaseAuth mAuth;
@@ -57,10 +57,12 @@ public class Login extends AppCompatActivity {
         password=(EditText)findViewById(R.id.passsword_si);
         signIn=(Button)findViewById(R.id.signin_si);
         signUp=(TextView)findViewById(R.id.create_acc_si);
-        signwithFB=(Button)findViewById(R.id.sigin_w_fb_si);
+        signwithGoogle=(Button)findViewById(R.id.sigin_w_fb_si);
 
         sharedPref = getApplicationContext().getSharedPreferences("Client",0);
         editor = sharedPref.edit();
+        editor.putBoolean("username_setted",false);
+        editor.commit();
 
         db=FirebaseFirestore.getInstance();
 
@@ -87,10 +89,10 @@ public class Login extends AppCompatActivity {
             }
         });
 
-        signwithFB.setOnClickListener(new View.OnClickListener() {
+        signwithGoogle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                fbSignIn();
+                googleSignIn();
             }
         });
     }
@@ -100,7 +102,7 @@ public class Login extends AppCompatActivity {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
-        if(currentUser!=null){
+        if(currentUser!=null&&sharedPref.getInt("firstTimeSignin",1)==0){
             logedIn();
         }
     }
@@ -136,7 +138,7 @@ public class Login extends AppCompatActivity {
         Intent intent=new Intent(this,Signup.class);
         startActivity(intent);
     }
-    public void fbSignIn(){
+    public void googleSignIn(){
        //call firebase FB sign in
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);

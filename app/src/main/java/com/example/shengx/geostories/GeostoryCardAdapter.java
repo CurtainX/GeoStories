@@ -18,6 +18,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.shengx.geostories.Utility.StoryControlUtility;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
@@ -57,7 +58,7 @@ public class GeostoryCardAdapter extends RecyclerView.Adapter<GeostoryCardAdapte
     }
 
     @Override
-    public void onBindViewHolder(GeostoryHolder holder, int position) {
+    public void onBindViewHolder(final GeostoryHolder holder, int position) {
 //        Bitmap profile_image=mGeostories.get(position).getProfile_image();
 //        Bitmap story_image=mGeostories.get(position).getStory_image();
 
@@ -82,6 +83,7 @@ public class GeostoryCardAdapter extends RecyclerView.Adapter<GeostoryCardAdapte
         dismiss.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                StoryControlUtility.dismissStory(holder);
                 Toast.makeText(v.getContext(),"dissmiss",Toast.LENGTH_LONG).show();
             }
         });

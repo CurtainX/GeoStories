@@ -1,5 +1,6 @@
 package com.example.shengx.geostories;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -209,6 +210,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         intent=new Intent(this,MainActivity.class);
         switch (item.getItemId()) {
             case R.id.post:
+                ProgressDialog.show(this, "Posting", "Wait while posting...");
                 if(selectedLatitude==-99){
                     postGeostory(initialRange,longitude,latitude,client_geostory);
                 }
@@ -261,7 +263,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     geostory.put(Geocons.STORY_CITY,String.valueOf(cityname));
                     geostory.put(Geocons.CLIENT_NAME,sharedPreferences.getString("username",""));
                     Log.d("Log","Start posting2");
-
                     db.collection(Geocons.DBcons.GEOSTORY_DB)
                             .add(geostory)
                             .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {

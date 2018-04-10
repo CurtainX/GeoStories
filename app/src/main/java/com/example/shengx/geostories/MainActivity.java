@@ -196,6 +196,7 @@ public class MainActivity extends AppCompatActivity {
                             case R.id.nav_signout:
                                 FirebaseAuth.getInstance().signOut();
                                 Intent intent = new Intent(getApplicationContext(), Login.class);
+                                
                                 startActivity(intent);
                                 break;
                             case R.id.nav_editprofile:
@@ -257,6 +258,7 @@ public class MainActivity extends AppCompatActivity {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
         Bitmap bitmap = BitmapFactory.decodeFile(photoPath, options);
+
 
         if(bitmap!=null){
             BitmapDrawable ob=new BitmapDrawable(getResources(),bitmap);
@@ -444,6 +446,7 @@ public class MainActivity extends AppCompatActivity {
 //                            Log.d("Log---Main--testing","Failed");
 //                        }
 //                    });
+
             final long ONE_MEGABYTE = 1024 * 1024;
             db.collection(Geocons.DBcons.GEOSTORY_DB)
                     .whereEqualTo(Geocons.STORY_CITY,mclient_city)
@@ -459,6 +462,7 @@ public class MainActivity extends AppCompatActivity {
                             client_names=new ArrayList<>();
 
                             downloadedGeostories_image1=new ArrayList<Geostory>();
+                            downloadedGeostories_image1.clear();
 
 
 
@@ -486,7 +490,7 @@ public class MainActivity extends AppCompatActivity {
                                             String.valueOf(story.get(Geocons.CLIENT_NAME)),
                                             String.valueOf(story.get(Geocons.POSTED_TIME)),String.valueOf(story.get(Geocons.GEO_STORY))
                                                         ));
-                                    
+
                                 }
 
                             }

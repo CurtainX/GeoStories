@@ -1,10 +1,12 @@
 package com.example.shengx.geostories;
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -42,17 +44,23 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URL;
 
 public class AddGeoStory extends AppCompatActivity {
     Intent intent;
     EditText geostoryin;
     private final int GALLERY_REQUEST=100;
-    ImageButton photo_from_gallary;
+    ImageButton photo_from_gallary, photo_by_camera;
     TextView story_image_prev;
     Bitmap bitmap;
     File storagePath,myFile;
     Boolean withPhoto=false;
     private int REQ_W_STORAGE_CODE=200;
+
+    static final int REQUEST_IMAGE_CAPTURE = 300;
+    Uri imageUri;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,7 +115,13 @@ public class AddGeoStory extends AppCompatActivity {
                 }
             }
         });
-
+        photo_by_camera=(ImageButton)findViewById(R.id.story_photo_camera);
+        photo_by_camera.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dispatchTakePictureIntent();
+            }
+        });
         storagePath = new File(Environment.getExternalStorageDirectory(), "Geo_Images");
         // Create direcorty if not exists
         if(!storagePath.exists()) {
@@ -138,9 +152,54 @@ public class AddGeoStory extends AppCompatActivity {
                         Log.i("TAG", "Some exception " + e);
                     }
                     break;
+                case REQUEST_IMAGE_CAPTURE:
+//                    Bundle extras = data.getExtras();
+//                    Bitmap imageBitmap = (Bitmap) extras.get("data");
+//                    try {
+//                        myFile = new File(storagePath,"story.jpg");
+//                        FileOutputStream fileOutputStream=new FileOutputStream(myFile);
+//                        imageBitmap.compress(Bitmap.CompressFormat.JPEG, 0, fileOutputStream);
+//                        BitmapDrawable ob = new BitmapDrawable(getResources(), imageBitmap);
+//                        story_image_prev.setBackgroundDrawable(ob);
+//
+//
+//
+//                        withPhoto = true;
+//                    }
+//                    catch (Exception e){
+//                        Log.i("TAG", "Some exception " + e);
+//                    }
+                    try {
+                        Bitmap thumbnail = MediaStore.Images.Media.getBitmap(
+                                getContentResolver(), imageUri);
+                        BitmapDrawable ob = new BitmapDrawable(getResources(), thumbnail);
+                        story_image_prev.setBackgroundDrawable(ob);
+                        String imageurl = getRealPathFromURI(imageUri);
+                        Log.d("LOG----->",imageurl);
+
+                        BitmapFactory.Options options = new BitmapFactory.Options();
+                        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                        Bitmap bitmap = BitmapFactory.decodeFile(imageurl, options);
+
+
+                        myFile = new File(storagePath,"story.jpg");
+                        FileOutputStream fileOutputStream=new FileOutputStream(myFile);
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 0, fileOutputStream);
+                        withPhoto=true;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
             }
     }
 
+    public String getRealPathFromURI(Uri contentUri) {
+        String[] proj = { MediaStore.Images.Media.DATA };
+        Cursor cursor = managedQuery(contentUri, proj, null, null, null);
+        int column_index = cursor
+                .getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+        cursor.moveToFirst();
+        return cursor.getString(column_index);
+    }
     @Override
     public boolean onCreatePanelMenu(int featureId, Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -198,6 +257,18 @@ public class AddGeoStory extends AppCompatActivity {
         else {
             Toast.makeText(getApplicationContext(),"Please grant the permission to continue",Toast.LENGTH_SHORT).show();
         }
+    }
+
+
+    private void dispatchTakePictureIntent() {
+        ContentValues values = new ContentValues();
+        values.put(MediaStore.Images.Media.TITLE, "New Picture");
+        values.put(MediaStore.Images.Media.DESCRIPTION, "From your Camera");
+        imageUri = getContentResolver().insert(
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+        startActivityForResult(intent, REQUEST_IMAGE_CAPTURE);
     }
 
 }

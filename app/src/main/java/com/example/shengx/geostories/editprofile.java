@@ -185,6 +185,10 @@ public class editprofile extends AppCompatActivity {
         });
 
 
+        if(sharedPreferences.getBoolean("username_setted",false)){
+            username.setEnabled(false);
+        }
+
 
 
 
@@ -257,7 +261,6 @@ public class editprofile extends AppCompatActivity {
                             }
                             else {
                                 Toast.makeText(getApplicationContext(),"Username Exists!",Toast.LENGTH_SHORT).show();
-
                             }
                         }
                         else {
@@ -282,7 +285,6 @@ public class editprofile extends AppCompatActivity {
                         };
                     }
                 });
-
     }
 
     @Override
@@ -294,17 +296,50 @@ public class editprofile extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+       final Intent firstTimeLoginCompleted=new Intent(this,MainActivity.class);
         switch (item.getItemId()) {
             case R.id.saveprofile:
                 if(sharedPreferences.getInt("firstTimeSignin",1)==1){
                     if(username.getText().toString().trim().length()==0){
                         Toast.makeText(getApplicationContext(),"Please enter your username to continue.",Toast.LENGTH_SHORT).show();
                     }else {
-                        updateUserProfile();
-                        editor.putInt("firstTimeSignin",0);
-                        editor.commit();
-                        Intent firstTimeLoginCompleted=new Intent(this,MainActivity.class);
-                        startActivity(firstTimeLoginCompleted);
+                        final Map<String,Object> user=new HashMap<>();
+                        user.put("username",username.getText().toString());
+                        user.put("about",about.getText().toString());
+                        db.collection("users").whereEqualTo("username",username.getText().toString()).get()
+                                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onSuccess(QuerySnapshot documentSnapshots) {
+                                        if(documentSnapshots.size()>0){
+                                                Toast.makeText(getApplicationContext(),"Username Exists!",Toast.LENGTH_SHORT).show();
+                                        }
+                                        else {
+                                            db.collection(Geocons.DBcons.USER_DB)
+                                                    .document(current_client.getUid())
+                                                    .set(user)
+                                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                        @Override
+                                                        public void onSuccess(Void aVoid) {
+                                                            editor.putString("username",username.getText().toString());
+                                                            editor.putString("about",about.getText().toString());
+                                                            editor.putBoolean("username_setted",true);
+                                                            editor.commit();
+                                                            editor.putInt("firstTimeSignin",0);
+                                                            editor.commit();
+                                                            startActivity(firstTimeLoginCompleted);
+
+                                                            Toast.makeText(getApplicationContext(),"Success",Toast.LENGTH_SHORT).show();
+                                                        }
+                                                    })
+                                                    .addOnFailureListener(new OnFailureListener() {
+                                                        @Override
+                                                        public void onFailure(@NonNull Exception e) {
+                                                            Toast.makeText(getApplicationContext(),"Failure",Toast.LENGTH_SHORT).show();
+                                                        }
+                                                    });
+                                        };
+                                    }
+                                });
                     }
                 }
                 else {
@@ -317,9 +352,9 @@ public class editprofile extends AppCompatActivity {
     }
 
     public void updateUserProfile(){
-        updateClientInfo(username.getText().toString(),about.getText().toString());
         username.setCursorVisible(false);
         about.setCursorVisible(false);
+        updateClientInfo(username.getText().toString(),about.getText().toString());
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
