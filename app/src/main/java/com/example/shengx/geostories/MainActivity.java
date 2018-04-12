@@ -116,9 +116,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-//        checkLocationPermission();
-        checkAndRequestPermissions();
+        checkLocationPermission();
         CheckEnableGPS();
+
 
         mFusedLocationProviderClient= LocationServices.getFusedLocationProviderClient(this);
 
@@ -253,6 +253,8 @@ public class MainActivity extends AppCompatActivity {
         Log.d("Log","success-->");
 
 
+
+
     }
 
     @Override
@@ -294,8 +296,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
-//            case REQ_LOC_CODE:
-            case PERMISSIONS_ALL:
+            case REQ_LOC_CODE:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                         // TODO: Consider calling
@@ -337,8 +338,7 @@ public class MainActivity extends AppCompatActivity {
                     Log.d("Location", "Permission Granted");
                 } else {
                     Log.d("Location: ", "Location Permission Required");
-                   // ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, REQ_LOC_CODE);
-                    ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSIONS_ALL);
+                    ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, REQ_LOC_CODE);
                 }
         }
     }
