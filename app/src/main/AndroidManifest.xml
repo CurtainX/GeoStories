@@ -76,9 +76,8 @@
             android:parentActivityName=".MainActivity" />
 
         <activity android:name=".Comments"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
-            ></activity>
+            android:windowSoftInputMode="stateVisible"
+            android:parentActivityName=".MainActivity"></activity>
     </application>
 
 </manifest>

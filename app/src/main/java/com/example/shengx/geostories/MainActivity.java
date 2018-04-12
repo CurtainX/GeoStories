@@ -75,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
     List<Geostory> mGeostories;
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private final int REQ_LOC_CODE = 100;
+    private final int PERMISSIONS_ALL=200;
     private String TAG = "FLOG";
     private GoogleApiClient googleApiClient;
 
@@ -115,7 +116,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        checkLocationPermission();
+//        checkLocationPermission();
+        checkAndRequestPermissions();
         CheckEnableGPS();
 
         mFusedLocationProviderClient= LocationServices.getFusedLocationProviderClient(this);
@@ -276,10 +278,24 @@ public class MainActivity extends AppCompatActivity {
         return locationPermissionCode == PackageManager.PERMISSION_GRANTED;
     }
 
+
+
+    private  boolean checkAndRequestPermissions() {
+        String[] PERMISSIONS = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+        for(String p:PERMISSIONS){
+            if(ActivityCompat.checkSelfPermission(this,p)!=PackageManager.PERMISSION_GRANTED){
+                ActivityCompat.requestPermissions(this,new String[]{p},PERMISSIONS_ALL);
+                return false;
+            }
+        }
+        return true;
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
-            case REQ_LOC_CODE:
+//            case REQ_LOC_CODE:
+            case PERMISSIONS_ALL:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                         // TODO: Consider calling
@@ -321,7 +337,8 @@ public class MainActivity extends AppCompatActivity {
                     Log.d("Location", "Permission Granted");
                 } else {
                     Log.d("Location: ", "Location Permission Required");
-                    ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, REQ_LOC_CODE);
+                   // ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, REQ_LOC_CODE);
+                    ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSIONS_ALL);
                 }
         }
     }

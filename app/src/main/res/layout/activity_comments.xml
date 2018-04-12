@@ -30,23 +30,23 @@
         android:orientation="horizontal">
 
         <EditText
+            android:id="@+id/commenttext"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:id="@+id/commenttext"
             android:background="@null"
-            android:paddingLeft="16dp"
-            android:textSize="16sp"
-            android:maxLines="4"
+            android:hint="Add a comment here"
             android:inputType="textMultiLine"
-            android:hint="Add a comment here" />
+            android:maxLines="4"
+            android:paddingLeft="16dp"
+            android:textSize="16sp" />
 
         <ImageView
+            android:id="@+id/send"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:id="@+id/send"
-            android:src="@drawable/ic_arrow_forward_white_24dp"
-        android:layout_weight="0" />
+            android:layout_weight="0"
+            android:src="@drawable/ic_arrow_forward_white_24dp" />
 
     </LinearLayout>
 

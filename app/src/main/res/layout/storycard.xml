@@ -96,7 +96,7 @@
                         app:srcCompat="@drawable/common_google_signin_btn_icon_dark_normal" />
                 </LinearLayout>
 
-                <LinearLayout
+                <android.support.constraint.ConstraintLayout
                     android:id="@+id/btngrouo_cd"
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
@@ -108,15 +108,21 @@
                         android:id="@+id/like_cd"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
+                        android:layout_marginEnd="8dp"
                         android:layout_weight="1"
-                        android:text="Like" />
+                        android:text="Like"
+                        card_view:layout_constraintEnd_toStartOf="@+id/comment_cd"
+                        tools:layout_editor_absoluteY="16dp" />
 
                     <Button
                         android:id="@+id/comment_cd"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
+                        android:layout_marginEnd="8dp"
                         android:layout_weight="1"
-                        android:text="Comment" />
+                        android:text="Comment"
+                        card_view:layout_constraintEnd_toEndOf="parent"
+                        tools:layout_editor_absoluteY="16dp" />
 
                     <Button
                         android:id="@+id/dismiss_cd"
@@ -125,7 +131,7 @@
                         android:layout_weight="1"
                         android:text="Dismisss"
                         android:visibility="gone" />
-                </LinearLayout>
+                </android.support.constraint.ConstraintLayout>
 
             </LinearLayout>
 

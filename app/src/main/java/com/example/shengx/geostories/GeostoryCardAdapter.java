@@ -173,7 +173,6 @@ public class GeostoryCardAdapter extends RecyclerView.Adapter<GeostoryCardAdapte
                     // Data for "images/island.jpg" is returns, use this as needed
                     if (bytes.length != 0) {
 
-
                         BitmapFactory.Options options = new BitmapFactory.Options();
                         options.inMutable = true;
                         Bitmap bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length, options);
