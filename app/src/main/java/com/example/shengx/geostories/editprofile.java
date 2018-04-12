@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -53,6 +54,8 @@ import java.io.IOException;
 import java.lang.reflect.GenericArrayType;
 import java.util.HashMap;
 import java.util.Map;
+
+import id.zelory.compressor.Compressor;
 
 public class editprofile extends AppCompatActivity {
     EditText username, about;
@@ -192,27 +195,6 @@ public class editprofile extends AppCompatActivity {
 
 
 
-//        final long ONE_MEGABYTE = 1024 * 1024 *5;
-//        gsReference.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-//            @Override
-//            public void onSuccess(byte[] bytes) {
-//                // Data for "images/island.jpg" is returns, use this as needed
-//                BitmapFactory.Options options = new BitmapFactory.Options();
-//                options.inMutable = true;
-//                Bitmap bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length, options);
-//                BitmapDrawable ob = new BitmapDrawable(getResources(), bmp);
-//                profile_img.setBackgroundDrawable(ob);
-//                Log.d("Log","success");
-//            }
-//        }).addOnFailureListener(new OnFailureListener() {
-//            @Override
-//            public void onFailure(@NonNull Exception exception) {
-//                // Handle any errors
-//                Log.d("Log","No ~!!success");
-//            }
-//        });
-
-
         String photoPath = Environment.getExternalStorageDirectory()+"/Geo_Images/"+current_client.getUid()+".jpg";
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
@@ -299,7 +281,7 @@ public class editprofile extends AppCompatActivity {
        final Intent firstTimeLoginCompleted=new Intent(this,MainActivity.class);
         switch (item.getItemId()) {
             case R.id.saveprofile:
-                if(sharedPreferences.getInt("firstTimeSignin",1)==1){
+                if(sharedPreferences.getBoolean(Geocons.FIRST_TIME_SIGN_IN,true)){
                     if(username.getText().toString().trim().length()==0){
                         Toast.makeText(getApplicationContext(),"Please enter your username to continue.",Toast.LENGTH_SHORT).show();
                     }else {
@@ -323,8 +305,7 @@ public class editprofile extends AppCompatActivity {
                                                             editor.putString("username",username.getText().toString());
                                                             editor.putString("about",about.getText().toString());
                                                             editor.putBoolean("username_setted",true);
-                                                            editor.commit();
-                                                            editor.putInt("firstTimeSignin",0);
+                                                            editor.putBoolean(Geocons.FIRST_TIME_SIGN_IN,false);
                                                             editor.commit();
                                                             startActivity(firstTimeLoginCompleted);
 
@@ -351,6 +332,22 @@ public class editprofile extends AppCompatActivity {
         }
     }
 
+    // And to convert the image URI to the direct file system path of the image file
+    public String getRealPathFromURI(Uri contentUri) {
+
+        // can post image
+        String [] proj={MediaStore.Images.Media.DATA};
+        Cursor cursor = getContentResolver().query(contentUri,
+                proj, // Which columns to return
+                null,       // WHERE clause; which rows to return (all rows)
+                null,       // WHERE clause selection arguments (none)
+                null); // Order-by clause (ascending by name)
+        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+        cursor.moveToFirst();
+
+        return cursor.getString(column_index);
+    }
+
     public void updateUserProfile(){
         username.setCursorVisible(false);
         about.setCursorVisible(false);
@@ -364,12 +361,16 @@ public class editprofile extends AppCompatActivity {
                 case GALLERY_REQUEST:
                     Uri selectedImage = data.getData();
                     try {
-                        Bitmap bitmap = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), selectedImage);
-                        BitmapDrawable ob = new BitmapDrawable(getResources(), bitmap);
+                        String p=getRealPathFromURI(selectedImage);
+                        File profileImage=new File(p);
+                        Bitmap compressedImageBitmap = new Compressor(this).compressToBitmap(profileImage);
+
+                        //Bitmap bitmap = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), selectedImage);
+                        BitmapDrawable ob = new BitmapDrawable(getResources(), compressedImageBitmap);
                         profile_img.setBackgroundDrawable(ob);
 
                         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                        bitmap.compress(Bitmap.CompressFormat.JPEG, 0, baos);
+                        compressedImageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
                         byte[] mData = baos.toByteArray();
                         mountainsRef = storageRef.child(current_client.getUid()+".jpg");
                         UploadTask uploadTask = mountainsRef.putBytes(mData);

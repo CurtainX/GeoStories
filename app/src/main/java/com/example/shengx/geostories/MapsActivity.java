@@ -47,6 +47,8 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -54,6 +56,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+
+import id.zelory.compressor.Compressor;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -271,11 +275,18 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                                     Log.d("Log","Start posting3-->"+documentReference.getId());
                                     if(withImage) {
                                         String photoPath = Environment.getExternalStorageDirectory() + "/Geo_Images/story.jpg";
+                                        Bitmap compressedImageBitmap=null;
+                                        File  mytoryImage=new File(photoPath);
+                                        try {
+                                            compressedImageBitmap = new Compressor(getApplicationContext()).compressToBitmap(mytoryImage);
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                        }
                                         BitmapFactory.Options options = new BitmapFactory.Options();
                                         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                                        Bitmap story_image = BitmapFactory.decodeFile(photoPath, options);
+                                        //Bitmap story_image = BitmapFactory.decodeFile(photoPath, options);
                                         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                                        story_image.compress(Bitmap.CompressFormat.JPEG, 0, baos);
+                                        compressedImageBitmap.compress(Bitmap.CompressFormat.JPEG, 60, baos);
                                         byte[] mData = baos.toByteArray();
                                         mountainsRef = storageRef.child(documentReference.getId() + ".jpg");
                                         UploadTask uploadTask = mountainsRef.putBytes(mData);

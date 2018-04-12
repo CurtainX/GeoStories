@@ -61,8 +61,7 @@ public class Login extends AppCompatActivity {
 
         sharedPref = getApplicationContext().getSharedPreferences("Client",0);
         editor = sharedPref.edit();
-        editor.putBoolean("username_setted",false);
-        editor.commit();
+
 
         db=FirebaseFirestore.getInstance();
 
@@ -102,7 +101,7 @@ public class Login extends AppCompatActivity {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
-        if(currentUser!=null&&sharedPref.getInt("firstTimeSignin",1)==0){
+        if(currentUser!=null&&sharedPref.getBoolean(Geocons.FIRST_TIME_SIGN_IN,true)==false){
             logedIn();
         }
     }
@@ -208,7 +207,7 @@ public class Login extends AppCompatActivity {
 
                     }
                 });
-        if(sharedPref.getInt("firstTimeSignin",1)==1){
+        if(sharedPref.getBoolean(Geocons.FIRST_TIME_SIGN_IN,true)){
             Intent firstTimeLogin=new Intent(this, editprofile.class);
             startActivity(firstTimeLogin);
             finish();

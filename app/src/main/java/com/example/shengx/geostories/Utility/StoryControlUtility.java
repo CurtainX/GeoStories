@@ -23,10 +23,10 @@ import java.util.Map;
  * Created by SHENG.X on 2018-04-09.
  */
 public class StoryControlUtility {
+    final static FirebaseFirestore db=FirebaseFirestore.getInstance();
 
 
     public static void likeStory(String storyID, String userID, final Button btn, final Context context){
-        final FirebaseFirestore db=FirebaseFirestore.getInstance();
         final Map<String,Object>like=new HashMap<>();
         like.put("story_id",storyID);
         like.put("user_id",userID);
@@ -37,8 +37,22 @@ public class StoryControlUtility {
                         if(documentSnapshots!=null){
                             if(documentSnapshots.getDocuments().size()>0){
                                 Log.d("Size---",documentSnapshots.getDocuments().size()+"");
-                                btn.setText("Dislike");
-                                Toast.makeText(context,"Already liked",Toast.LENGTH_SHORT).show();
+                                //dislike
+                                db.collection("likes").document(documentSnapshots.getDocuments().get(0).getId())
+                                        .delete()
+                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                btn.setText("Like");
+                                            }
+                                        })
+                                        .addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+                                            }
+                                        });
+
+
                             }else {
                                 db.collection("likes").add(like);
                                 btn.setText("Dislike");
@@ -52,13 +66,39 @@ public class StoryControlUtility {
                 }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                db.collection("likes").add(like);
             }
         });
 
 
     }
-    public static void commentStory(){
+
+    public static void checkLiked(String storyID, String userID, final Button btn){
+        db.collection("likes").whereEqualTo("story_id",storyID).whereEqualTo("user_id",userID).get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot documentSnapshots) {
+                        if(documentSnapshots!=null){
+                            if(documentSnapshots.getDocuments().size()>0){
+                                Log.d("Size---",documentSnapshots.getDocuments().size()+"");
+                                btn.setText("Dislike");
+                            }else {
+                            }
+                        }else {
+                            btn.setText("Like");
+                        }
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+            }
+        });
+    }
+
+    public void checkComments(){
+
+    }
+    public static void commentStory(String storyID, String clientID, String commentContent){
+
 
     }
     public static void dismissStory(GeostoryCardAdapter.GeostoryHolder holder){

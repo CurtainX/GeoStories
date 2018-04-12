@@ -15,6 +15,7 @@ public class Geocons {
     public static final String POSTED_TIME="posted_time";
     public static final String VISIBLE_RANGE="visible_range";
     public static final String STORY_CITY="story_city";
+    public static final String FIRST_TIME_SIGN_IN="first_time_sign_in";
     public class DBcons{
         public static final String GEOSTORY_DB="geostorys";
         public static final String USER_DB="users";

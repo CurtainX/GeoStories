@@ -153,22 +153,7 @@ public class AddGeoStory extends AppCompatActivity {
                     }
                     break;
                 case REQUEST_IMAGE_CAPTURE:
-//                    Bundle extras = data.getExtras();
-//                    Bitmap imageBitmap = (Bitmap) extras.get("data");
-//                    try {
-//                        myFile = new File(storagePath,"story.jpg");
-//                        FileOutputStream fileOutputStream=new FileOutputStream(myFile);
-//                        imageBitmap.compress(Bitmap.CompressFormat.JPEG, 0, fileOutputStream);
-//                        BitmapDrawable ob = new BitmapDrawable(getResources(), imageBitmap);
-//                        story_image_prev.setBackgroundDrawable(ob);
-//
-//
-//
-//                        withPhoto = true;
-//                    }
-//                    catch (Exception e){
-//                        Log.i("TAG", "Some exception " + e);
-//                    }
+
                     try {
                         Bitmap thumbnail = MediaStore.Images.Media.getBitmap(
                                 getContentResolver(), imageUri);
@@ -184,7 +169,7 @@ public class AddGeoStory extends AppCompatActivity {
 
                         myFile = new File(storagePath,"story.jpg");
                         FileOutputStream fileOutputStream=new FileOutputStream(myFile);
-                        bitmap.compress(Bitmap.CompressFormat.JPEG, 0, fileOutputStream);
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
                         withPhoto=true;
                     } catch (Exception e) {
                         e.printStackTrace();

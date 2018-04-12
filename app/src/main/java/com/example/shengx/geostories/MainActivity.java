@@ -132,8 +132,6 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-
-
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ActionBar actionbar = getSupportActionBar();
@@ -218,7 +216,7 @@ public class MainActivity extends AppCompatActivity {
 
        mLocationRequest=LocationRequest.create()
                .setExpirationDuration(LocationRequest.PRIORITY_HIGH_ACCURACY)
-               .setInterval(10000)
+               .setInterval(500)
                .setFastestInterval(500);
        mLocationCallback=new LocationCallback(){
            @Override
@@ -430,26 +428,6 @@ public class MainActivity extends AppCompatActivity {
         try{
             List<Address> client_city=gcd.getFromLocation(clientLocation.getLatitude(),clientLocation.getLongitude(),1);
             mclient_city=client_city.get(0).getLocality();
-//            db.collection(Geocons.DBcons.GEOSTORY_DB)
-//                    .whereEqualTo(Geocons.STORY_CITY,mclient_city)
-//                    .get()
-//                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-//                        @Override
-//                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-//                            for(DocumentSnapshot story:task.getResult().getDocuments()){
-//                                Log.d("Log---Main--testing",story.getId()+story.get("geostory"));
-//                                downloadedGeostories.add(new Geostory(String.valueOf(story.get("client_id")),String.valueOf(story.get("posted_time")),String.valueOf(story.get("geostory"))));
-//                            }
-//                            geostoryCardAdapter = new GeostoryCardAdapter(downloadedGeostories);
-//                            geostoryList.setAdapter(geostoryCardAdapter);
-//                        }
-//                    })
-//                    .addOnFailureListener(new OnFailureListener() {
-//                        @Override
-//                        public void onFailure(@NonNull Exception e) {
-//                            Log.d("Log---Main--testing","Failed");
-//                        }
-//                    });
 
             final long ONE_MEGABYTE = 1024 * 1024;
             db.collection(Geocons.DBcons.GEOSTORY_DB)
