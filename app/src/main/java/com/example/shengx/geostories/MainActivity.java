@@ -31,6 +31,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.shengx.geostories.Constances.Geocons;
@@ -61,6 +62,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -71,68 +73,62 @@ public class MainActivity extends AppCompatActivity {
     List<Geostory> mGeostories;
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private final int REQ_LOC_CODE = 100;
-    private final int PERMISSIONS_ALL=200;
-    private final int REQ_STORAGE_CODE=300;
+    private final int PERMISSIONS_ALL = 200;
+    private final int REQ_STORAGE_CODE = 300;
     private String TAG = "FLOG";
     private GoogleApiClient googleApiClient;
-
-    private Location clientLocation;
 
 
     private DrawerLayout mDrawerLayout;
 
-    private LocationRequest mLocationRequest;
+    private LocationRequest mLocationRequest,mLocationRequest2;
     private LocationCallback mLocationCallback;
 
 
-    TextView userimage, username,userabout;
+    TextView userimage, username, userabout;
     SharedPreferences sharedPreferences;
 
 
     FirebaseStorage storage;
-    StorageReference gsReference_profile_img,gsReference_story_img;
+    StorageReference gsReference_profile_img, gsReference_story_img;
 
     FirebaseFirestore db;
 
 
-//    List<Bitmap> profile_images=new ArrayList<>();
-//    List<Bitmap> story_images=new ArrayList<>();
-//    List<String> story_ids=new ArrayList<>();
-//    List<String> client_ids=new ArrayList<>();
-//    List<String> posted_dates=new ArrayList<>();
-//    List<String> storys=new ArrayList<>();
-//    List<String> client_names=new ArrayList<>();
+    List<Bitmap> profile_images = new ArrayList<>();
+    List<Bitmap> story_images = new ArrayList<>();
+    List<String> story_ids = new ArrayList<>();
+    List<String> client_ids = new ArrayList<>();
+    List<String> posted_dates = new ArrayList<>();
+    List<String> storys = new ArrayList<>();
+    List<String> client_names = new ArrayList<>();
 
-    List<Geostory> downloadedGeostories_image1,downloadedGeostories_image2;
+    List<Geostory> downloadedGeostories_image1, downloadedGeostories_image2;
 
-    int profile_image_counter=0,story_image_counter=0;
+    int profile_image_counter = 0, story_image_counter = 0;
 
     String[] PERMISSIONS = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
-
+    private Location clientLocation;
     Activity mActivity;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if(!hasPermissions(this, PERMISSIONS)){
-            ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSIONS_ALL);
-        }
         checkLocationPermission();
         CheckEnableGPS();
-        mActivity=this;
+        mActivity = this;
 
-        mFusedLocationProviderClient= LocationServices.getFusedLocationProviderClient(this);
+        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
 
-        db=FirebaseFirestore.getInstance();
+        db = FirebaseFirestore.getInstance();
 
 
         // Get the default bucket from a custom FirebaseApp
         storage = FirebaseStorage.getInstance();
-
-
 
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -163,10 +159,10 @@ public class MainActivity extends AppCompatActivity {
         geostoryList.setItemViewCacheSize(5);
         geostoryList.setNestedScrollingEnabled(false);
 
-        geostoryCardAdapter = new GeostoryCardAdapter(mGeostories,this);
+        geostoryCardAdapter = new GeostoryCardAdapter(mGeostories, this);
         geostoryList.setAdapter(geostoryCardAdapter);
 
-        FirebaseFirestore db=FirebaseFirestore.getInstance();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference docRef = db.collection("cities").document("SF");
         db.collection("geostorys").document("BpH7nx2UcWrNeIvYnbxK").get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -217,42 +213,47 @@ public class MainActivity extends AppCompatActivity {
                 });
 
 
-       mLocationRequest=LocationRequest.create()
-               .setExpirationDuration(LocationRequest.PRIORITY_HIGH_ACCURACY)
-               .setInterval(500)
-               .setFastestInterval(500);
-       mLocationCallback=new LocationCallback(){
-           @Override
-           public void onLocationResult(LocationResult locationResult) {
-               super.onLocationResult(locationResult);
-               clientLocation=locationResult.getLastLocation();
+        mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(1000);
+        mLocationRequest.setFastestInterval(500);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
-               Log.d("Locaiton Client",clientLocation.getLatitude()+"$$$$$"+clientLocation.getLongitude());
-           }
+        mLocationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                super.onLocationResult(locationResult);
+                if (locationResult == null) {
+                    Log.d("Location", "null");
+                    return;
+                }
+                clientLocation = locationResult.getLastLocation();
+                getStoies();
+                Log.d("Locaiton Client", clientLocation.getLatitude() + "$$$$$" + clientLocation.getLongitude());
+                Log.d("Location", "Received update");
+            }
 
-           @Override
-           public void onLocationAvailability(LocationAvailability locationAvailability) {
-               super.onLocationAvailability(locationAvailability);
-               Log.d("Locaiton Client",locationAvailability.toString());
-           }
-       };
-        sharedPreferences=getApplicationContext().getSharedPreferences("Client",0);
-        userabout=(TextView)navigationView.getHeaderView(0).findViewById(R.id.about_m);
-        username=(TextView)navigationView.getHeaderView(0).findViewById(R.id.username_m);
-        userimage=(TextView)navigationView.getHeaderView(0).findViewById(R.id.user_img_m);
-        String photoPath = Environment.getExternalStorageDirectory()+"/Geo_Images/"+FirebaseAuth.getInstance().getCurrentUser().getUid()+".jpg";
+            @Override
+            public void onLocationAvailability(LocationAvailability locationAvailability) {
+                super.onLocationAvailability(locationAvailability);
+                Log.d("Locaiton Client", locationAvailability.toString());
+            }
+        };
+        sharedPreferences = getApplicationContext().getSharedPreferences("Client", 0);
+        userabout = (TextView) navigationView.getHeaderView(0).findViewById(R.id.about_m);
+        username = (TextView) navigationView.getHeaderView(0).findViewById(R.id.username_m);
+        userimage = (TextView) navigationView.getHeaderView(0).findViewById(R.id.user_img_m);
+        String photoPath = Environment.getExternalStorageDirectory() + "/Geo_Images/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + ".jpg";
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
         Bitmap bitmap = BitmapFactory.decodeFile(photoPath, options);
 
-        if(bitmap!=null){
-            BitmapDrawable ob=new BitmapDrawable(getResources(),bitmap);
+        if (bitmap != null) {
+            BitmapDrawable ob = new BitmapDrawable(getResources(), bitmap);
             userimage.setBackgroundDrawable(ob);
         }
-        username.setText(sharedPreferences.getString("username",""));
-        userabout.setText(sharedPreferences.getString("about",""));
-        Log.d("Log","success-->");
-
+        username.setText(sharedPreferences.getString("username", ""));
+        userabout.setText(sharedPreferences.getString("about", ""));
+        Log.d("Log", "success-->");
 
 
     }
@@ -260,18 +261,18 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPostResume() {
         super.onPostResume();
-        String photoPath = Environment.getExternalStorageDirectory()+"/Geo_Images/"+FirebaseAuth.getInstance().getCurrentUser().getUid()+".jpg";
+        String photoPath = Environment.getExternalStorageDirectory() + "/Geo_Images/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + ".jpg";
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
         Bitmap bitmap = BitmapFactory.decodeFile(photoPath, options);
 
 
-        if(bitmap!=null){
-            BitmapDrawable ob=new BitmapDrawable(getResources(),bitmap);
+        if (bitmap != null) {
+            BitmapDrawable ob = new BitmapDrawable(getResources(), bitmap);
             userimage.setBackgroundDrawable(ob);
         }
-        username.setText(sharedPreferences.getString("username",""));
-        userabout.setText(sharedPreferences.getString("about",""));
+        username.setText(sharedPreferences.getString("username", ""));
+        userabout.setText(sharedPreferences.getString("about", ""));
     }
 
     public boolean checkLocationPermission() {
@@ -280,60 +281,65 @@ public class MainActivity extends AppCompatActivity {
         return locationPermissionCode == PackageManager.PERMISSION_GRANTED;
     }
 
-    public static boolean hasPermissions(Context context, String... permissions) {
-        if (context != null && permissions != null) {
-            for (String permission : permissions) {
-                if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
-    private  boolean checkAndRequestPermissions() {
-        String[] PERMISSIONS = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.WRITE_EXTERNAL_STORAGE};
-        for(String p:PERMISSIONS){
-            if(ActivityCompat.checkSelfPermission(this,p)!=PackageManager.PERMISSION_GRANTED){
-                ActivityCompat.requestPermissions(this,new String[]{p},PERMISSIONS_ALL);
-                return false;
-            }
-        }
-        return true;
-    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
             case REQ_LOC_CODE:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    if (checkLocationPermission())
-                        mFusedLocationProviderClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
-                            @Override
-                            public void onSuccess(Location location) {
-                                if (location == null) {
-                                    if (ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                                        // TODO: Consider calling
-                                        //    ActivityCompat#requestPermissions
-                                        // here to request the missing permissions, and then overriding
-                                        //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                                        //                                          int[] grantResults)
-                                        // to handle the case where the user grants the permission. See the documentation
-                                        // for ActivityCompat#requestPermissions for more details.
-                                        return;
-                                    }
-                                    Log.d("Location Client", "Client has no Last location");
+                    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        // TODO: Consider calling
+                        //    ActivityCompat#requestPermissions
+                        // here to request the missing permissions, and then overriding
+                        //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                        //                                          int[] grantResults)
+                        // to handle the case where the user grants the permission. See the documentation
+                        // for ActivityCompat#requestPermissions for more details.
+                        return;
+                    }
 
-                                    mFusedLocationProviderClient.requestLocationUpdates(mLocationRequest, mLocationCallback, null);
+                    mFusedLocationProviderClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+                        @Override
+                        public void onSuccess(Location location) {
+                            if (location == null) {
 
-                                } else {
-                                    Log.d("Location Client", "Client has Last location");
-                                    clientLocation = location;
-                                    getStoies();
+                                Log.d("Location Client", "Client has no Last location");
+                                if (ActivityCompat.checkSelfPermission(mActivity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(mActivity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                                    // TODO: Consider calling
+                                    //    ActivityCompat#requestPermissions
+                                    // here to request the missing permissions, and then overriding
+                                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                                    //                                          int[] grantResults)
+                                    // to handle the case where the user grants the permission. See the documentation
+                                    // for ActivityCompat#requestPermissions for more details.
 
                                 }
+                                Log.d("Location","start to request");
+                                mFusedLocationProviderClient.requestLocationUpdates(mLocationRequest, mLocationCallback, null);
+
+
+                            } else {
+                                Log.d("Location Client", "Client has Last location");
+//                                clientLocation = location;
+//                                getStoies();
+
+                                if (ActivityCompat.checkSelfPermission(mActivity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(mActivity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                                    // TODO: Consider calling
+                                    //    ActivityCompat#requestPermissions
+                                    // here to request the missing permissions, and then overriding
+                                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                                    //                                          int[] grantResults)
+                                    // to handle the case where the user grants the permission. See the documentation
+                                    // for ActivityCompat#requestPermissions for more details.
+                                    return;
+                                }
+                                mFusedLocationProviderClient.requestLocationUpdates(mLocationRequest, mLocationCallback, null);
+
+
+
                             }
-                        });
+                        }
+                    });
 
                     Log.d("Location", "Permission Granted");
                 } else {
@@ -378,8 +384,8 @@ public class MainActivity extends AppCompatActivity {
         googleApiClient.connect();
         LocationRequest locationRequest = LocationRequest.create();
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        locationRequest.setInterval(5 * 1000);
-        locationRequest.setFastestInterval(2 * 1000);
+        locationRequest.setInterval(500);
+        locationRequest.setFastestInterval(200);
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
                 .addLocationRequest(locationRequest);
 
@@ -396,7 +402,8 @@ public class MainActivity extends AppCompatActivity {
                 //final LocationSettingsStates state = result.getLocationSettingsStates();
                 switch (status.getStatusCode()) {
                     case LocationSettingsStatusCodes.SUCCESS:
-
+                        getStoies();
+                        Log.d("Log-story","download story will be from here");
                         break;
                     case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
                         // Location settings are not satisfied. But could be fixed by showing the user
@@ -406,11 +413,13 @@ public class MainActivity extends AppCompatActivity {
                             // and check the result in onActivityResult().
                             status.startResolutionForResult(
                                     MainActivity.this, 1000);
+                            Log.d("Log-status","pop out");
                         } catch (IntentSender.SendIntentException e) {
                             // Ignore the error.
                         }
                         break;
                     case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                        Log.d("Log-un","unnnn");
                         break;
                 }
             }
@@ -454,13 +463,13 @@ public class MainActivity extends AppCompatActivity {
                     .addSnapshotListener(new EventListener<QuerySnapshot>() {
                         @Override
                         public void onEvent(QuerySnapshot documentSnapshots, final FirebaseFirestoreException e) {
-//                            profile_images=new ArrayList<>();
-//                            story_images=new ArrayList<>();
-//                            story_ids=new ArrayList<>();
-//                            client_ids=new ArrayList<>();
-//                            posted_dates=new ArrayList<>();
-//                            storys=new ArrayList<>();
-//                            client_names=new ArrayList<>();
+                            profile_images=new ArrayList<>();
+                            story_images=new ArrayList<>();
+                            story_ids=new ArrayList<>();
+                            client_ids=new ArrayList<>();
+                            posted_dates=new ArrayList<>();
+                            storys=new ArrayList<>();
+                            client_names=new ArrayList<>();
 
                             downloadedGeostories_image1=new ArrayList<Geostory>();
                             downloadedGeostories_image1.clear();
@@ -475,11 +484,11 @@ public class MainActivity extends AppCompatActivity {
 
                             for (DocumentSnapshot story : documentSnapshots) {
                                 if (story.getId()!= null) {
-//                                    story_ids.add(String.valueOf(story.getId()));
-//                                    client_ids.add(String.valueOf(story.get(Geocons.CLIENT_ID)));
-//                                    posted_dates.add(String.valueOf(story.get(Geocons.POSTED_TIME)));
-//                                    storys.add(String.valueOf(story.get(Geocons.GEO_STORY)));
-//                                    client_names.add(String.valueOf(story.get(Geocons.CLIENT_NAME)));
+                                    story_ids.add(String.valueOf(story.getId()));
+                                    client_ids.add(String.valueOf(story.get(Geocons.CLIENT_ID)));
+                                    posted_dates.add(String.valueOf(story.get(Geocons.POSTED_TIME)));
+                                    storys.add(String.valueOf(story.get(Geocons.GEO_STORY)));
+                                    client_names.add(String.valueOf(story.get(Geocons.CLIENT_NAME)));
 
                                     Log.d("Log----check@@@",story.getId()+".jpg");
 
