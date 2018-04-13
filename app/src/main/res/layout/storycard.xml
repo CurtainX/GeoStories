@@ -9,7 +9,7 @@
     <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
         android:id="@+id/card_view"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
@@ -81,10 +81,14 @@
                     <TextView
                         android:id="@+id/geostory_cd"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
+                        android:minHeight="130dp"
                         android:layout_weight="1"
                         android:padding="5dp"
                         android:text="TextView"
+                        android:maxLines="7"
+                        android:scrollbars="vertical"
+                        android:nestedScrollingEnabled="false"
                         tools:text="Here is the geostory located" />
 
                     <ImageView
@@ -95,6 +99,7 @@
                         android:padding="0dp"
                         app:srcCompat="@drawable/common_google_signin_btn_icon_dark_normal" />
                 </LinearLayout>
+
 
                 <android.support.constraint.ConstraintLayout
                     android:id="@+id/btngrouo_cd"
@@ -131,6 +136,36 @@
                         android:layout_weight="1"
                         android:text="Dismisss"
                         android:visibility="gone" />
+                </android.support.constraint.ConstraintLayout>
+
+                <android.support.constraint.ConstraintLayout
+                    android:id="@+id/display_counter"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:orientation="horizontal"
+                    android:visibility="gone">
+
+
+                    <TextView
+                        android:id="@+id/like_counter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="0 Like"
+                        android:visibility="gone"
+                        card_view:layout_constraintStart_toStartOf="parent"
+                        tools:layout_editor_absoluteY="1dp" />
+
+                    <TextView
+                        android:id="@+id/comment_counter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="0 Comment"
+                        android:visibility="gone"
+                        card_view:layout_constraintStart_toEndOf="@+id/like_counter"
+                        tools:layout_editor_absoluteY="1dp" />
                 </android.support.constraint.ConstraintLayout>
 
             </LinearLayout>

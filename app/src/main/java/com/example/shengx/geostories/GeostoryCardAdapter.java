@@ -1,5 +1,6 @@
 package com.example.shengx.geostories;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -7,19 +8,24 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.PixelFormat;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -27,6 +33,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.shengx.geostories.Constances.Geocons;
 import com.example.shengx.geostories.Utility.StoryControlUtility;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -42,6 +49,8 @@ import java.util.List;
 
 import id.zelory.compressor.Compressor;
 
+import static android.content.Context.WINDOW_SERVICE;
+
 /**
  * Created by SHENG.X on 2018-03-22.
  */
@@ -53,7 +62,7 @@ public class GeostoryCardAdapter extends RecyclerView.Adapter<GeostoryCardAdapte
     final long ONE_MEGABYTE=1024*1024;
     int story_image_counter=0;
     File storagePath,myFile;
-    Dialog dialog;
+
 
 
 
@@ -93,13 +102,16 @@ public class GeostoryCardAdapter extends RecyclerView.Adapter<GeostoryCardAdapte
         updateProfileImage(mGeostories.get(position).getClientID(),holder.profileImage);
         updateStoryImage(mGeostories.get(position).getStoryID(),holder.geostoryImage);
 
-
-        holder.username.setText(mGeostories.get(position).getUsername());
-        holder.datePosted.setText(mGeostories.get(position).getDatePosted());
-        holder.geostory.setText(mGeostories.get(position).getGeostory());
-        final String storyID,clientID;
+        final String storyID,clientID,clientName;
         storyID=mGeostories.get(position).getStoryID();
         clientID=mGeostories.get(position).getClientID();
+        clientName=mGeostories.get(position).getUsername();
+        holder.username.setText(clientName);
+        holder.datePosted.setText(mGeostories.get(position).getDatePosted());
+        holder.geostory.setText(mGeostories.get(position).getGeostory());
+        int height_in_pixels = holder.geostory.getLineCount() * holder.geostory.getLineHeight();
+        holder.geostory.setHeight(height_in_pixels);
+        holder.geostory.setMovementMethod(new ScrollingMovementMethod());
 
 
         holder.geostoryImage.setOnClickListener(new View.OnClickListener() {
@@ -132,8 +144,10 @@ public class GeostoryCardAdapter extends RecyclerView.Adapter<GeostoryCardAdapte
             @Override
             public void onClick(View v) {
                 Intent intent=new Intent(context,Comments.class);
+                intent.putExtra(Geocons.COMMENT_INTENT_EXTRA,storyID);
+                intent.putExtra(Geocons.CLIENT_NAME,clientName);
                 context.startActivity(intent);
-                Toast.makeText(v.getContext(),"comment",Toast.LENGTH_LONG).show();
+                Toast.makeText(v.getContext(),"comment-->"+storyID,Toast.LENGTH_LONG).show();
             }
         });
         holder.dismiss.setOnClickListener(new View.OnClickListener() {
@@ -274,7 +288,12 @@ public class GeostoryCardAdapter extends RecyclerView.Adapter<GeostoryCardAdapte
 
 
     private void showDialog(Bitmap bitmap) {
-
+       Dialog mDialog=new Dialog(context);
+        mDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        mDialog.setContentView(R.layout.image_dialog);
+        ImageView mImage=(ImageView)mDialog.findViewById(R.id.popoutImage);
+        mImage.setImageBitmap(bitmap);
+        mDialog.show();
     }
 
 }

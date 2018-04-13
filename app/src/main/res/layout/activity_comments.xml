@@ -11,10 +11,10 @@
         android:layout_weight="0"/>
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/my_recycler_view"
+        android:id="@+id/comment_list"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"/>
+        android:layout_weight="1" />
 
     <View
         android:layout_width="match_parent"
@@ -42,11 +42,13 @@
             android:textSize="16sp" />
 
         <ImageView
-            android:id="@+id/send"
+            android:id="@+id/send_comment"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_weight="0"
-            android:src="@drawable/ic_arrow_forward_white_24dp" />
+            android:backgroundTint="@color/colorAccent"
+            android:src="@mipmap/ic_arrow_forward_black_24dp"
+            android:visibility="visible" />
 
     </LinearLayout>
 
