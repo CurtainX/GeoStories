@@ -172,7 +172,9 @@ public class GeostoryCardAdapter extends RecyclerView.Adapter<GeostoryCardAdapte
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
         Bitmap bitmap  = null;
         try {
-            bitmap = new Compressor(context).compressToBitmap(actualprofileImage);
+            if(actualprofileImage!=null){
+                bitmap = new Compressor(context).compressToBitmap(actualprofileImage);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

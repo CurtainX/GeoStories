@@ -226,7 +226,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         switch (item.getItemId()) {
             case R.id.post:
                 ProgressDialog.show(this, "Posting", "Wait while posting...");
-                if(selectedLatitude==-99){
+                if(selectedLatitude==-200){
                     postGeostory(initialRange,longitude,latitude,client_geostory);
                 }
                 else {
