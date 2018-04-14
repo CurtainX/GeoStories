@@ -25,5 +25,6 @@ public class Geocons {
         public static final String GEOSTORY_DB="geostorys";
         public static final String USER_DB="users";
         public static final String COMMENTS_DB="comments";
+        public static final String LIKE_DB="likes";
     }
 }

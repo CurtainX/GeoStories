@@ -105,29 +105,39 @@
                     android:id="@+id/btngrouo_cd"
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
+                    android:layout_marginTop="5dp"
                     android:orientation="horizontal"
-                    android:visibility="visible"
-                    android:layout_marginTop="5dp">
+                    android:visibility="visible">
 
-                    <Button
+                    <ImageView
                         android:id="@+id/like_cd"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_marginEnd="8dp"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_marginBottom="8dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginTop="8dp"
                         android:layout_weight="1"
+                        android:background="@drawable/ic_favorite_border_white_24dp"
+                        android:backgroundTint="@color/common_google_signin_btn_text_light_focused"
                         android:text="Like"
+                        card_view:layout_constraintBottom_toBottomOf="parent"
                         card_view:layout_constraintEnd_toStartOf="@+id/comment_cd"
-                        tools:layout_editor_absoluteY="16dp" />
+                        card_view:layout_constraintTop_toTopOf="parent" />
 
-                    <Button
+                    <ImageView
                         android:id="@+id/comment_cd"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_marginEnd="8dp"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_marginBottom="8dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginTop="8dp"
                         android:layout_weight="1"
+                        android:background="@drawable/ic_chat_bubble_outline_white_24dp"
+                        android:backgroundTint="@color/common_google_signin_btn_text_light_focused"
                         android:text="Comment"
+                        card_view:layout_constraintBottom_toBottomOf="parent"
                         card_view:layout_constraintEnd_toEndOf="parent"
-                        tools:layout_editor_absoluteY="16dp" />
+                        card_view:layout_constraintTop_toTopOf="parent" />
 
                     <Button
                         android:id="@+id/dismiss_cd"
@@ -142,9 +152,10 @@
                     android:id="@+id/display_counter"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
                     android:layout_marginTop="5dp"
                     android:orientation="horizontal"
-                    android:visibility="gone">
+                    android:visibility="visible">
 
 
                     <TextView
@@ -153,7 +164,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
                         android:text="0 Like"
-                        android:visibility="gone"
+                        android:visibility="visible"
                         card_view:layout_constraintStart_toStartOf="parent"
                         tools:layout_editor_absoluteY="1dp" />
 
@@ -163,7 +174,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
                         android:text="0 Comment"
-                        android:visibility="gone"
+                        android:visibility="visible"
                         card_view:layout_constraintStart_toEndOf="@+id/like_counter"
                         tools:layout_editor_absoluteY="1dp" />
                 </android.support.constraint.ConstraintLayout>

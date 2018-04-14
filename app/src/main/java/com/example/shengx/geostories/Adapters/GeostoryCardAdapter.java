@@ -8,6 +8,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.os.Environment;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
@@ -50,6 +51,7 @@ public class GeostoryCardAdapter extends RecyclerView.Adapter<GeostoryCardAdapte
     final long ONE_MEGABYTE=1024*1024;
     int story_image_counter=0;
     File storagePath,myFile;
+    String clientID;
 
 
 
@@ -57,10 +59,11 @@ public class GeostoryCardAdapter extends RecyclerView.Adapter<GeostoryCardAdapte
     StorageReference gsReference_profile_img,gsReference_story_img;
 
 
-    public GeostoryCardAdapter(List<Geostory> mGeostories, Context context) {
+    public GeostoryCardAdapter(List<Geostory> mGeostories, Context context, String clientID) {
         this.mGeostories = mGeostories;
         this.context=context;
         storage=FirebaseStorage.getInstance();
+        this.clientID=clientID;
         storagePath= new File(Environment.getExternalStorageDirectory(), "Geo_Images");
 
     }
@@ -90,9 +93,9 @@ public class GeostoryCardAdapter extends RecyclerView.Adapter<GeostoryCardAdapte
         updateProfileImage(mGeostories.get(position).getClientID(),holder.profileImage);
         updateStoryImage(mGeostories.get(position).getStoryID(),holder.geostoryImage);
 
-        final String storyID,clientID,clientName;
+        final String storyID,storyOwnerID,clientName;
         storyID=mGeostories.get(position).getStoryID();
-        clientID=mGeostories.get(position).getClientID();
+        storyOwnerID=mGeostories.get(position).getClientID();
         clientName=mGeostories.get(position).getUsername();
         holder.username.setText(clientName);
         holder.datePosted.setText(mGeostories.get(position).getDatePosted());
@@ -100,8 +103,9 @@ public class GeostoryCardAdapter extends RecyclerView.Adapter<GeostoryCardAdapte
         int height_in_pixels = holder.geostory.getLineCount() * holder.geostory.getLineHeight();
         holder.geostory.setHeight(height_in_pixels);
         holder.geostory.setMovementMethod(new ScrollingMovementMethod());
-
-
+        StoryControlUtility.checkLiked(storyID,clientID,holder.like,context);
+        StoryControlUtility.likeCounter(storyID,holder.likecounter);
+        StoryControlUtility.commentCounter(storyID,holder.commnentcounter);
         holder.geostoryImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -120,7 +124,6 @@ public class GeostoryCardAdapter extends RecyclerView.Adapter<GeostoryCardAdapte
             }
         });
 
-        StoryControlUtility.checkLiked(storyID,clientID,holder.like);
         holder.like.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -138,13 +141,13 @@ public class GeostoryCardAdapter extends RecyclerView.Adapter<GeostoryCardAdapte
                 Toast.makeText(v.getContext(),"comment-->"+storyID,Toast.LENGTH_LONG).show();
             }
         });
-        holder.dismiss.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                StoryControlUtility.dismissStory(holder);
-                Toast.makeText(v.getContext(),"dissmiss",Toast.LENGTH_LONG).show();
-            }
-        });
+//        holder.dismiss.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                StoryControlUtility.dismissStory(holder);
+//                Toast.makeText(v.getContext(),"dissmiss",Toast.LENGTH_LONG).show();
+//            }
+//        });
     }
 
     @Override
@@ -262,9 +265,10 @@ public class GeostoryCardAdapter extends RecyclerView.Adapter<GeostoryCardAdapte
 
     public class GeostoryHolder extends RecyclerView.ViewHolder{
         ImageView profileImage;
-        TextView username, datePosted, geostory;
+        TextView username, datePosted, geostory, likecounter,commnentcounter;
         ImageView geostoryImage;
-        Button like, comment,dismiss;
+        ImageView like, comment,dismiss;
+        ConstraintLayout imageViewHolder;
 
         public GeostoryHolder(View itemView) {
             super(itemView);
@@ -273,9 +277,12 @@ public class GeostoryCardAdapter extends RecyclerView.Adapter<GeostoryCardAdapte
             datePosted=(TextView)itemView.findViewById(R.id.dateposted_cd);
             geostory=(TextView)itemView.findViewById(R.id.geostory_cd);
             geostoryImage=(ImageView)itemView.findViewById(R.id.geostoryimage_cd);
-            like=(Button)itemView.findViewById(R.id.like_cd);
-            comment=(Button)itemView.findViewById(R.id.comment_cd);
-            dismiss=(Button)itemView.findViewById(R.id.dismiss_cd);
+            like=(ImageView)itemView.findViewById(R.id.like_cd);
+            comment=(ImageView)itemView.findViewById(R.id.comment_cd);
+//            dismiss=(ImageView)itemView.findViewById(R.id.dismiss_cd);
+            likecounter=(TextView)itemView.findViewById(R.id.like_counter);
+            commnentcounter=(TextView)itemView.findViewById(R.id.comment_counter);
+            imageViewHolder=(ConstraintLayout)itemView.findViewById(R.id.display_counter);
         }
     }
 

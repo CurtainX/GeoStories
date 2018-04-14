@@ -15,6 +15,7 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Parcelable;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -92,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
     StorageReference gsReference_profile_img, gsReference_story_img;
 
     FirebaseFirestore db;
-
+    LinearLayoutManager layoutManager;
 
     List<Geostory> downloadedGeostories_image;
 
@@ -104,6 +105,32 @@ public class MainActivity extends AppCompatActivity {
     Activity mActivity;
 
     ProgressDialog waitingProgree;
+
+
+
+    private Bundle mBundleRecyclerViewState;
+    private String LIST_STATE_KEY="rec_pos";
+
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // restore RecyclerView state
+        if (mBundleRecyclerViewState != null) {
+            Parcelable listState = mBundleRecyclerViewState.getParcelable(LIST_STATE_KEY);
+            geostoryList.getLayoutManager().onRestoreInstanceState(listState);
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // save RecyclerView state
+        mBundleRecyclerViewState = new Bundle();
+        Parcelable listState = geostoryList.getLayoutManager().onSaveInstanceState();
+        mBundleRecyclerViewState.putParcelable(LIST_STATE_KEY, listState);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -143,18 +170,24 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
         geostoryList = (RecyclerView) findViewById(R.id.geostories_list);
         geostoryList.setHasFixedSize(true);
         geostoryList.getItemAnimator().setChangeDuration(0);
-        final LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         geostoryList.setLayoutManager(layoutManager);
         mGeostories = new ArrayList<Geostory>();
 
         geostoryList.setItemViewCacheSize(5);
         geostoryList.setNestedScrollingEnabled(false);
 
-        geostoryCardAdapter = new GeostoryCardAdapter(mGeostories, this);
+        geostoryCardAdapter = new GeostoryCardAdapter(mGeostories, this,FirebaseAuth.getInstance().getUid());
         geostoryList.setAdapter(geostoryCardAdapter);
+
+
+
+
+
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference docRef = db.collection("cities").document("SF");

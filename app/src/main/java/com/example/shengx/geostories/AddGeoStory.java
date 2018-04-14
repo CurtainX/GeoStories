@@ -130,7 +130,7 @@ public class AddGeoStory extends AppCompatActivity {
                         Log.d("Log--size",bitmap.getByteCount()+"");
                         myFile = new File(storagePath,"story.jpg");
                         FileOutputStream fileOutputStream=new FileOutputStream(myFile);
-                        bitmap.compress(Bitmap.CompressFormat.JPEG, 0, fileOutputStream);
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
                         BitmapDrawable ob = new BitmapDrawable(getResources(), bitmap);
                         story_image_prev.setBackgroundDrawable(ob);
                         withPhoto=true;
