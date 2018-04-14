@@ -321,6 +321,10 @@ public class editprofile extends AppCompatActivity {
                     updateUserProfile();
                 }
                 return true;
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+
             default:
                 return  super.onOptionsItemSelected(item);
         }
@@ -347,6 +351,9 @@ public class editprofile extends AppCompatActivity {
         about.setCursorVisible(false);
         updateClientInfo(username.getText().toString(),about.getText().toString());
     }
+
+
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);

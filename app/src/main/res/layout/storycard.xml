@@ -155,7 +155,7 @@
                     android:layout_gravity="center_vertical"
                     android:layout_marginTop="5dp"
                     android:orientation="horizontal"
-                    android:visibility="gone">
+                    android:visibility="visible">
 
 
                     <TextView
@@ -164,7 +164,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
                         android:text="0 Like"
-                        android:visibility="visible"
+                        android:visibility="gone"
                         card_view:layout_constraintStart_toStartOf="parent"
                         tools:layout_editor_absoluteY="1dp" />
 
@@ -174,7 +174,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
                         android:text="0 Comment"
-                        android:visibility="visible"
+                        android:visibility="gone"
                         card_view:layout_constraintStart_toEndOf="@+id/like_counter"
                         tools:layout_editor_absoluteY="1dp" />
                 </android.support.constraint.ConstraintLayout>

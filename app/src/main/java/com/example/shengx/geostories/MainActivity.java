@@ -137,8 +137,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        checkLocationPermission();
         CheckEnableGPS();
+        checkLocationPermission();
         mActivity = this;
 
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
@@ -257,6 +257,7 @@ public class MainActivity extends AppCompatActivity {
                 }else {
                     waitingProgree.dismiss();
                     clientLocation = locationResult.getLastLocation();
+                    Log.d("Loc-c","null--->");
                     getStoies();
                     Log.d("Locaiton Client", clientLocation.getLatitude() + "$$$$$" + clientLocation.getLongitude());
                     Log.d("Location", "Received update");
@@ -345,7 +346,7 @@ public class MainActivity extends AppCompatActivity {
 
                                 }
                                 Log.d("Location","start to request");
-                                mFusedLocationProviderClient.requestLocationUpdates(mLocationRequest2, mLocationCallback, null);
+                                mFusedLocationProviderClient.requestLocationUpdates(mLocationRequest, mLocationCallback, null);
 
 
                             } else {
