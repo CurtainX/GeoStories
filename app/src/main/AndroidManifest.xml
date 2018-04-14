@@ -19,7 +19,6 @@
     <!-- To auto-complete the email text field in the login form with the user's emails -->
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
-
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
@@ -35,8 +34,7 @@
         android:largeHeap="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        >
+        android:theme="@style/AppTheme">
 
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
@@ -52,8 +50,7 @@
 
         <activity
             android:name=".MapsActivity"
-            android:parentActivityName=".AddGeoStory"
-            />
+            android:parentActivityName=".AddGeoStory" />
         <activity
             android:name=".AddGeoStory"
             android:parentActivityName=".MainActivity" />
@@ -74,10 +71,11 @@
         <activity
             android:name=".editprofile"
             android:parentActivityName=".MainActivity" />
-
-        <activity android:name=".Comments"
-            android:windowSoftInputMode="stateVisible"
-            android:parentActivityName=".MainActivity"></activity>
+        <activity
+            android:name=".Comments"
+            android:parentActivityName=".MainActivity"
+            android:windowSoftInputMode="stateVisible" />
+        <activity android:name=".Adapters.MarkInfoAdapter"></activity>
     </application>
 
 </manifest>

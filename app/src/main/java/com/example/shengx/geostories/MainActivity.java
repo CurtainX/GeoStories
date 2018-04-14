@@ -2,7 +2,7 @@ package com.example.shengx.geostories;
 
 import android.Manifest;
 import android.app.Activity;
-import android.content.Context;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
@@ -31,9 +31,9 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.TextView;
 
+import com.example.shengx.geostories.Adapters.GeostoryCardAdapter;
 import com.example.shengx.geostories.Constances.Geocons;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -62,7 +62,6 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -95,15 +94,7 @@ public class MainActivity extends AppCompatActivity {
     FirebaseFirestore db;
 
 
-    List<Bitmap> profile_images = new ArrayList<>();
-    List<Bitmap> story_images = new ArrayList<>();
-    List<String> story_ids = new ArrayList<>();
-    List<String> client_ids = new ArrayList<>();
-    List<String> posted_dates = new ArrayList<>();
-    List<String> storys = new ArrayList<>();
-    List<String> client_names = new ArrayList<>();
-
-    List<Geostory> downloadedGeostories_image1, downloadedGeostories_image2;
+    List<Geostory> downloadedGeostories_image;
 
     int profile_image_counter = 0, story_image_counter = 0;
 
@@ -111,6 +102,8 @@ public class MainActivity extends AppCompatActivity {
 
     private Location clientLocation;
     Activity mActivity;
+
+    ProgressDialog waitingProgree;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -152,6 +145,7 @@ public class MainActivity extends AppCompatActivity {
 
         geostoryList = (RecyclerView) findViewById(R.id.geostories_list);
         geostoryList.setHasFixedSize(true);
+        geostoryList.getItemAnimator().setChangeDuration(0);
         final LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         geostoryList.setLayoutManager(layoutManager);
         mGeostories = new ArrayList<Geostory>();
@@ -212,6 +206,8 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
+//        waitingProgree=new ProgressDialog(this);
+        waitingProgree=ProgressDialog.show(this, "Requesting Geostories", "Wait while requesting...");
 
         mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(1000);
@@ -225,11 +221,13 @@ public class MainActivity extends AppCompatActivity {
                 if (locationResult == null) {
                     Log.d("Location", "null");
                     return;
+                }else {
+                    waitingProgree.dismiss();
+                    clientLocation = locationResult.getLastLocation();
+                    getStoies();
+                    Log.d("Locaiton Client", clientLocation.getLatitude() + "$$$$$" + clientLocation.getLongitude());
+                    Log.d("Location", "Received update");
                 }
-                clientLocation = locationResult.getLastLocation();
-                getStoies();
-                Log.d("Locaiton Client", clientLocation.getLatitude() + "$$$$$" + clientLocation.getLongitude());
-                Log.d("Location", "Received update");
             }
 
             @Override
@@ -297,7 +295,6 @@ public class MainActivity extends AppCompatActivity {
                         // for ActivityCompat#requestPermissions for more details.
                         return;
                     }
-
                     mFusedLocationProviderClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
                         @Override
                         public void onSuccess(Location location) {
@@ -315,7 +312,7 @@ public class MainActivity extends AppCompatActivity {
 
                                 }
                                 Log.d("Location","start to request");
-                                mFusedLocationProviderClient.requestLocationUpdates(mLocationRequest, mLocationCallback, null);
+                                mFusedLocationProviderClient.requestLocationUpdates(mLocationRequest2, mLocationCallback, null);
 
 
                             } else {
@@ -463,16 +460,9 @@ public class MainActivity extends AppCompatActivity {
                     .addSnapshotListener(new EventListener<QuerySnapshot>() {
                         @Override
                         public void onEvent(QuerySnapshot documentSnapshots, final FirebaseFirestoreException e) {
-                            profile_images=new ArrayList<>();
-                            story_images=new ArrayList<>();
-                            story_ids=new ArrayList<>();
-                            client_ids=new ArrayList<>();
-                            posted_dates=new ArrayList<>();
-                            storys=new ArrayList<>();
-                            client_names=new ArrayList<>();
 
-                            downloadedGeostories_image1=new ArrayList<Geostory>();
-                            downloadedGeostories_image1.clear();
+                            downloadedGeostories_image=new ArrayList<Geostory>();
+                            downloadedGeostories_image.clear();
 
 
 
@@ -484,29 +474,35 @@ public class MainActivity extends AppCompatActivity {
 
                             for (DocumentSnapshot story : documentSnapshots) {
                                 if (story.getId()!= null) {
-                                    story_ids.add(String.valueOf(story.getId()));
-                                    client_ids.add(String.valueOf(story.get(Geocons.CLIENT_ID)));
-                                    posted_dates.add(String.valueOf(story.get(Geocons.POSTED_TIME)));
-                                    storys.add(String.valueOf(story.get(Geocons.GEO_STORY)));
-                                    client_names.add(String.valueOf(story.get(Geocons.CLIENT_NAME)));
 
                                     Log.d("Log----check@@@",story.getId()+".jpg");
 
+                                    Log.d("Log-visible-Range",story.get(Geocons.VISIBLE_RANGE).toString());
+                                    Double storyRange=Double.parseDouble(story.get(Geocons.VISIBLE_RANGE).toString());
+                                    Location storyLocation=new Location("gpslocation");
+                                    storyLocation.setLatitude(Double.parseDouble(story.get(Geocons.GEO_LATITUDE).toString()));
+                                    storyLocation.setLongitude(Double.parseDouble(story.get(Geocons.GEO_LONGITUDE).toString()));
+                                    Log.d("Log-distance",clientLocation.distanceTo(storyLocation)+"");
 
-                                    downloadedGeostories_image1.add(new Geostory(String.valueOf(story.getId()),
-                                                                String.valueOf(story.get(Geocons.CLIENT_ID)),
-                                                                null,
-                                                                null,
-                                            String.valueOf(story.get(Geocons.CLIENT_NAME)),
-                                            String.valueOf(story.get(Geocons.POSTED_TIME)),String.valueOf(story.get(Geocons.GEO_STORY))
-                                                        ));
+
+
+                                    if(clientLocation.distanceTo(storyLocation)<=storyRange){
+                                        downloadedGeostories_image.add(new Geostory(String.valueOf(story.getId()),
+                                                String.valueOf(story.get(Geocons.CLIENT_ID)),
+                                                null,
+                                                null,
+                                                String.valueOf(story.get(Geocons.CLIENT_NAME)),
+                                                String.valueOf(story.get(Geocons.POSTED_TIME)),
+                                                String.valueOf(story.get(Geocons.GEO_STORY))
+                                        ));
+                                    }
 
                                 }
 
                             }
 
-                            geostoryCardAdapter=new GeostoryCardAdapter(downloadedGeostories_image1,mActivity);
-                            geostoryList.setAdapter(geostoryCardAdapter);
+                            geostoryCardAdapter.addStory(downloadedGeostories_image);
+                            geostoryCardAdapter.notifyDataSetChanged();
 //                            Log.d("Logcheck---point",story_ids.size()+"@@@@@@@@@@"+storys.size());
                             Log.d(TAG, "story set");
                         }

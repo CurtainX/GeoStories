@@ -23,6 +23,7 @@ import android.view.MenuItem;
 import android.widget.SeekBar;
 import android.widget.Toast;
 
+import com.example.shengx.geostories.Adapters.MarkInfoAdapter;
 import com.example.shengx.geostories.Constances.Geocons;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -33,6 +34,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -63,11 +65,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private GoogleMap mMap;
     private final int REQ_LOC_CODE=100;
     private FusedLocationProviderClient mFusedLocationProviderClient;
-    private double latitude, longitude,gpslatitude,gpslongitude,selectedLatitude=-99,selectedLongitude=-99;
+    private double latitude, longitude,gpslatitude,gpslongitude,selectedLatitude=-200,selectedLongitude=-200;
     private SeekBar rangeContorller;
     private Circle circle;
     private int initialRange=60;
-    private int maxRange=400;
+    private int maxRange=410;
     FirebaseFirestore db;
     private String client_geostory="";
     private FirebaseUser currentClient;
@@ -80,6 +82,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     StorageReference storageRef;
     StorageReference mountainsRef;
     SharedPreferences sharedPreferences;
+    Marker story_marker;
 
 
     @Override
@@ -105,6 +108,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 initialRange=progress;
                 circle.setRadius(progress);
+                zoomAnimation(progress);
+                story_marker.setTitle(progress+" meters");
+                story_marker.showInfoWindow();
             }
 
             @Override
@@ -153,6 +159,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        mMap.setInfoWindowAdapter(new MarkInfoAdapter(this));
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
 
             @Override
@@ -162,7 +169,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 selectedLatitude=point.latitude;
                 selectedLongitude=point.longitude;
                 mMap.clear();
-                mMap.addMarker(new MarkerOptions().position(point));
+                story_marker=mMap.addMarker(new MarkerOptions().position(point));
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(point));
                 circle = mMap.addCircle(new CircleOptions()
                         .center(new LatLng(point.latitude,point.longitude))
@@ -170,6 +177,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                         .strokeColor(Color.RED)
                         .strokeWidth(2)
                         .fillColor(Color.TRANSPARENT));
+                story_marker.setTitle(initialRange+" meters");
+                story_marker.showInfoWindow();
             }
         });
         if(checkLocationPermission()){
@@ -184,7 +193,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                         Log.d("Location",latitude+"******"+longitude);
                         // Add a marker in Sydney and move the camera
                         LatLng clientLocation = new LatLng(latitude, longitude);
-                        mMap.addMarker(new MarkerOptions().position(clientLocation).title("My Location"));
+                        story_marker=mMap.addMarker(new MarkerOptions().position(clientLocation).title("My Location"));
                         mMap.moveCamera(CameraUpdateFactory.newLatLng(clientLocation));
                         circle = mMap.addCircle(new CircleOptions()
                                 .center(new LatLng(latitude,longitude))
@@ -192,6 +201,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 .strokeColor(Color.RED)
                                 .strokeWidth(2)
                                 .fillColor(Color.TRANSPARENT));
+                        story_marker.setTitle(initialRange+" meters");
+                        story_marker.showInfoWindow();
+                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 18.0f));
                     }
                 });
         }
@@ -345,6 +357,56 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         return false;
     }
 
-
+public void zoomAnimation(int progress){
+    if(progress<=30){
+        if (selectedLatitude != -200) {
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(selectedLatitude, selectedLongitude), 19f));
+        }else {
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(gpslatitude, gpslongitude), 19f));
+        }
+    }
+    else if(progress<=70){
+        if (selectedLatitude != -200) {
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(selectedLatitude, selectedLongitude), 18.5f));
+        }else {
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(gpslatitude, gpslongitude), 18.5f));
+        }
+    }
+    else if(progress<=120){
+        if (selectedLatitude != -200) {
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(selectedLatitude, selectedLongitude), 17.5f));
+        }else {
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(gpslatitude, gpslongitude), 17.5f));
+        }
+    }
+    else if(progress<=150){
+        if (selectedLatitude != -200) {
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(selectedLatitude, selectedLongitude), 17f));
+        }else {
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(gpslatitude, gpslongitude), 17.0f));
+        }
+    }
+    else if(progress<=200){
+        if (selectedLatitude != -200) {
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(selectedLatitude, selectedLongitude), 16.5f));
+        }else {
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(gpslatitude, gpslongitude), 16.5f));
+        }
+    }
+    else if(progress<=300){
+        if (selectedLatitude != -200) {
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(selectedLatitude, selectedLongitude), 15.5f));
+        }else {
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(gpslatitude, gpslongitude), 15.5f));
+        }
+    }
+    else {
+        if (selectedLatitude != -200) {
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(selectedLatitude, selectedLongitude), 14.5f));
+        }else {
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(gpslatitude, gpslongitude), 14.5f));
+        }
+    }
+}
 
 }

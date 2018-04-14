@@ -1,18 +1,15 @@
 package com.example.shengx.geostories.Utility;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.example.shengx.geostories.GeostoryCardAdapter;
-import com.example.shengx.geostories.R;
+import com.example.shengx.geostories.Adapters.GeostoryCardAdapter;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 

@@ -1,43 +1,32 @@
-package com.example.shengx.geostories;
+package com.example.shengx.geostories.Adapters;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.graphics.PixelFormat;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Environment;
 import android.support.annotation.NonNull;
-import android.support.constraint.ConstraintLayout;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.shengx.geostories.Comments;
 import com.example.shengx.geostories.Constances.Geocons;
+import com.example.shengx.geostories.Geostory;
+import com.example.shengx.geostories.R;
 import com.example.shengx.geostories.Utility.StoryControlUtility;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -45,11 +34,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 import id.zelory.compressor.Compressor;
-
-import static android.content.Context.WINDOW_SERVICE;
 
 /**
  * Created by SHENG.X on 2018-03-22.
@@ -163,6 +151,14 @@ public class GeostoryCardAdapter extends RecyclerView.Adapter<GeostoryCardAdapte
     public int getItemCount() {
         return mGeostories.size();
     }
+
+    public void addStory(List<Geostory> geostories){
+        Collections.reverse(geostories);
+        mGeostories.clear();
+        mGeostories.addAll(geostories);
+
+    }
+
 
 
 
