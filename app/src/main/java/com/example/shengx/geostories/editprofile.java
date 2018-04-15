@@ -1,6 +1,7 @@
 package com.example.shengx.geostories;
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -8,7 +9,9 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Build;
@@ -28,6 +31,7 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,11 +49,14 @@ import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 import id.zelory.compressor.Compressor;
+
+import static com.example.shengx.geostories.AddGeoStory.REQUEST_IMAGE_CAPTURE;
 
 public class editprofile extends AppCompatActivity {
     EditText username, about;
@@ -58,6 +65,8 @@ public class editprofile extends AppCompatActivity {
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
     TextView replace_profile_img;
+
+    LinearLayout choose_image,shoot_image;
 
     private final int REQ_W_STORAGE_CODE=200;
     private final int GALLERY_REQUEST=100;
@@ -68,6 +77,8 @@ public class editprofile extends AppCompatActivity {
     StorageReference gsReference;
     File storagePath;
     File myFile;
+
+    Uri imageUri;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,7 +90,8 @@ public class editprofile extends AppCompatActivity {
         // Create a storage reference from our app
          storageRef = storage.getReference();
 
-
+         choose_image=(LinearLayout)findViewById(R.id.choose_profile_image);
+         shoot_image=(LinearLayout)findViewById(R.id.shoot_profile_image);
         username=(EditText)findViewById(R.id.username_profile);
         about=(EditText)findViewById(R.id.about_profile);
         about.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -181,6 +193,34 @@ public class editprofile extends AppCompatActivity {
             }
         });
 
+        choose_image.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(isStoragePermissionGranted()){
+                    Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+                    photoPickerIntent.setType("image/*");
+                    startActivityForResult(photoPickerIntent, GALLERY_REQUEST);
+
+                    gsReference.getFile(myFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                            // Local temp file has been created
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception exception) {
+                            // Handle any errors
+                        }
+                    });
+                }
+            }
+        });
+        shoot_image.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dispatchTakePictureIntent();
+            }
+        });
 
         if(sharedPreferences.getBoolean("username_setted",false)){
             username.setEnabled(false);
@@ -404,6 +444,58 @@ public class editprofile extends AppCompatActivity {
                         Log.i("TAG", "Some exception " + e);
                     }
                     break;
+                case REQUEST_IMAGE_CAPTURE:
+
+                    try {
+                        Bitmap thumbnail = MediaStore.Images.Media.getBitmap(
+                                getContentResolver(), imageUri);
+                        BitmapDrawable ob = new BitmapDrawable(getResources(), thumbnail);
+                        profile_img.setBackgroundDrawable(ob);
+                        String imageurl = getRealPathFromURI(imageUri);
+                        Log.d("LOG----->",imageurl);
+
+                        BitmapFactory.Options options = new BitmapFactory.Options();
+                        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                        Bitmap bitmap = BitmapFactory.decodeFile(imageurl, options);
+
+
+                        myFile = new File(storagePath,current_client.getUid()+".jpg");
+                        FileOutputStream fileOutputStream=new FileOutputStream(myFile);
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
+                        Bitmap compressedImageBitmap = new Compressor(this).compressToBitmap(myFile);
+                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                        compressedImageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                        byte[] mData = baos.toByteArray();
+                        mountainsRef = storageRef.child(current_client.getUid()+".jpg");
+                        UploadTask uploadTask = mountainsRef.putBytes(mData);
+                        uploadTask.addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception exception) {
+                                // Handle unsuccessful uploads
+                            }
+                        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+                                Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                                gsReference.getFile(myFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                                    @Override
+                                    public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                                        // Local temp file has been created
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception exception) {
+                                        // Handle any errors
+                                    }
+                                });
+                            }
+                        });
+
+                        Log.d("TAG", "Success" );
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
             }
     }
     public  boolean isStoragePermissionGranted() {
@@ -438,4 +530,16 @@ public class editprofile extends AppCompatActivity {
             Toast.makeText(getApplicationContext(),"Please grant the permission to continue",Toast.LENGTH_SHORT).show();
         }
     }
+
+    private void dispatchTakePictureIntent() {
+        ContentValues values = new ContentValues();
+        values.put(MediaStore.Images.Media.TITLE, "New Picture");
+        values.put(MediaStore.Images.Media.DESCRIPTION, "From your Camera");
+        imageUri = getContentResolver().insert(
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+        startActivityForResult(intent, REQUEST_IMAGE_CAPTURE);
+    }
+    
 }

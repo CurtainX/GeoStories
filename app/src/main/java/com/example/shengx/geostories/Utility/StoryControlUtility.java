@@ -193,4 +193,22 @@ public class StoryControlUtility {
         });
     }
 
+
+
+    public static void getAboutStoryOwner(final String ownerName, final TextView aboutview){
+        db.collection(Geocons.DBcons.USER_DB).whereEqualTo("username",ownerName).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot documentSnapshots) {
+                String about="";
+                for(DocumentSnapshot documentSnapshot:documentSnapshots){
+                   about=documentSnapshot.get("about").toString();
+                   break;
+                }
+                if(about.equals("")){
+                    about="He/She did not put anything about him";
+                }
+                aboutview.setText(about);
+            }
+        });
+        }
 }

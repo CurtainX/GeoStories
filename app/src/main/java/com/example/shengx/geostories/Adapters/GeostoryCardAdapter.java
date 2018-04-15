@@ -124,6 +124,22 @@ public class GeostoryCardAdapter extends RecyclerView.Adapter<GeostoryCardAdapte
             }
         });
 
+        holder.profileImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String photoPath = Environment.getExternalStorageDirectory() + "/Geo_Images/" + storyOwnerID + ".jpg";
+                File actualprofileImage=new File(photoPath);
+                if(actualprofileImage!=null){
+                    Bitmap bitmap = null;
+                    try {
+                        bitmap = new Compressor(context).compressToBitmap(actualprofileImage);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    showProfileDialog(bitmap,clientName);
+                }
+            }
+        });
         holder.like.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -182,38 +198,41 @@ public class GeostoryCardAdapter extends RecyclerView.Adapter<GeostoryCardAdapte
             profileImage.setImageBitmap(bitmap);
         } else {
             gsReference_profile_img = storage.getReferenceFromUrl("gs://geostories-87738.appspot.com/" + client_id + ".jpg");
-            gsReference_profile_img.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-                @Override
-                public void onSuccess(byte[] bytes) {
-                    // Data for "images/island.jpg" is returns, use this as needed
-                    if (bytes.length != 0) {
+            if(!profileImage.getTag().equals("Updated")){
+                gsReference_profile_img.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                    @Override
+                    public void onSuccess(byte[] bytes) {
+                        // Data for "images/island.jpg" is returns, use this as needed
+                        if (bytes.length != 0) {
 
-                        BitmapFactory.Options options = new BitmapFactory.Options();
-                        options.inMutable = true;
-                        Bitmap bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length, options);
-                        myFile = new File(storagePath,client_id+".jpg");
-                        FileOutputStream fileOutputStream= null;
-                        try {
-                            fileOutputStream = new FileOutputStream(myFile);
-                        } catch (FileNotFoundException e) {
-                            e.printStackTrace();
+                            BitmapFactory.Options options = new BitmapFactory.Options();
+                            options.inMutable = true;
+                            Bitmap bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length, options);
+                            myFile = new File(storagePath,client_id+".jpg");
+                            FileOutputStream fileOutputStream= null;
+                            try {
+                                fileOutputStream = new FileOutputStream(myFile);
+                            } catch (FileNotFoundException e) {
+                                e.printStackTrace();
+                            }
+                            bmp.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
+                            profileImage.setImageBitmap(bmp);
+                            Log.d("Log-chec", "success story image downloaded" + bmp.getByteCount());
                         }
-                        bmp.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
-                        profileImage.setImageBitmap(bmp);
-                        Log.d("Log-chec", "success story image downloaded" + bmp.getByteCount());
                     }
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception exception) {
-                    // Handle any errors
-                    Log.d("Log", "No ~!!success222");
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        // Handle any errors
+                        Log.d("Log", "No ~!!success222");
 //                                            Drawable d = context.getResources().getDrawable(R.drawable.ic_camera_black_24dp);
 //                                            Bitmap bitmap = ((BitmapDrawable)d).getBitmap();
 //                                            profileImage.setImageBitmap(null);
 
-                }
-            });
+                    }
+                });
+            }
+            profileImage.setTag("Updated");
         }
     }
 
@@ -227,42 +246,44 @@ public class GeostoryCardAdapter extends RecyclerView.Adapter<GeostoryCardAdapte
             storyImage.setImageBitmap(bitmap);
         }else {
             gsReference_story_img = storage.getReferenceFromUrl("gs://geostories-87738.appspot.com/"+story_id+".jpg");
-            gsReference_story_img.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-                @Override
-                public void onSuccess(byte[] bytes) {
-                    // Data for "images/island.jpg" is returns, use this as needed
-                    if(bytes.length!=0) {
+            if(!storyImage.getTag().equals("Updated")){
+                gsReference_story_img.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                    @Override
+                    public void onSuccess(byte[] bytes) {
+                        // Data for "images/island.jpg" is returns, use this as needed
+                        if(bytes.length!=0) {
 
-                        BitmapFactory.Options options = new BitmapFactory.Options();
-                        options.inMutable = true;
-                        Bitmap bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length, options);
-                        myFile = new File(storagePath,story_id+".jpg");
-                        FileOutputStream fileOutputStream= null;
-                        try {
-                            fileOutputStream = new FileOutputStream(myFile);
-                        } catch (FileNotFoundException e) {
-                            e.printStackTrace();
+                            BitmapFactory.Options options = new BitmapFactory.Options();
+                            options.inMutable = true;
+                            Bitmap bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length, options);
+                            myFile = new File(storagePath,story_id+".jpg");
+                            FileOutputStream fileOutputStream= null;
+                            try {
+                                fileOutputStream = new FileOutputStream(myFile);
+                            } catch (FileNotFoundException e) {
+                                e.printStackTrace();
+                            }
+                            bmp.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
+
+                            storyImage.setImageBitmap(bmp);
+                            Log.d("Log-chec", "success story image downloaded" +story_id+"%%"+ bmp.getByteCount());
+                            story_image_counter++;
+                            Log.d("Log-chec-Counter",story_image_counter+"****************************8");
                         }
-                        bmp.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
-
-                        storyImage.setImageBitmap(bmp);
-                        Log.d("Log-chec", "success story image downloaded" +story_id+"%%"+ bmp.getByteCount());
-                        story_image_counter++;
-                        Log.d("Log-chec-Counter",story_image_counter+"****************************8");
                     }
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception exception) {
-                    // Handle any errors
-                    Log.d("Log22","No ~!!success222--------->"+story_id);
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        // Handle any errors
+                        Log.d("Log22","No ~!!success222--------->"+story_id);
 //                Drawable d = context.getResources().getDrawable(R.drawable.ic_camera_black_24dp);
 //                Bitmap bitmap = ((BitmapDrawable)d).getBitmap();
 //                storyImage.setImageBitmap(null);
-
-                }
-            });
+                    }
+                });
+            }
         }
+        storyImage.setTag("Updated");
     }
 
     public class GeostoryHolder extends RecyclerView.ViewHolder{
@@ -285,6 +306,8 @@ public class GeostoryCardAdapter extends RecyclerView.Adapter<GeostoryCardAdapte
             likecounter=(TextView)itemView.findViewById(R.id.like_counter);
             commnentcounter=(TextView)itemView.findViewById(R.id.comment_counter);
             imageViewHolder=(ConstraintLayout)itemView.findViewById(R.id.display_counter);
+            geostoryImage.setTag("not updated");
+            profileImage.setTag("not updated");
         }
     }
 
@@ -301,4 +324,20 @@ public class GeostoryCardAdapter extends RecyclerView.Adapter<GeostoryCardAdapte
         mDialog.show();
     }
 
+
+
+
+    private void showProfileDialog(Bitmap bitmap, String username) {
+        Dialog mDialog=new Dialog(context);
+        mDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        mDialog.setContentView(R.layout.previewprofile);
+        ImageView profile_pre=(ImageView)mDialog.findViewById(R.id.profile_preview_photo);
+        TextView username_pre=(TextView)mDialog.findViewById(R.id.profile_preview_username);
+        TextView aboout_pre=(TextView)mDialog.findViewById(R.id.profile_preview_about);
+        StoryControlUtility.getAboutStoryOwner(username,aboout_pre);
+        profile_pre.setImageBitmap(bitmap);
+        username_pre.setText(username);
+        //aboout_pre.setText(about);
+        mDialog.show();
+    }
 }

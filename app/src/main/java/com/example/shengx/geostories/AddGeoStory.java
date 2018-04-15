@@ -1,6 +1,7 @@
 package com.example.shengx.geostories;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -22,10 +23,12 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,6 +37,8 @@ import com.example.shengx.geostories.Constances.Geocons;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+
+import id.zelory.compressor.Compressor;
 
 public class AddGeoStory extends AppCompatActivity {
     Intent intent;
@@ -92,6 +97,23 @@ public class AddGeoStory extends AppCompatActivity {
             }
         });
         story_image_prev=(TextView)findViewById(R.id.prev_story_photo);
+        story_image_prev.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Bitmap imgpreview=null;
+                String photoPath = Environment.getExternalStorageDirectory() + "/Geo_Images/story.jpg";
+                File actualprofileImage=new File(photoPath);
+                try {
+                    imgpreview = new Compressor(getApplicationContext()).compressToBitmap(actualprofileImage);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                if(withPhoto){
+                    showPreview(imgpreview);
+                }
+            }
+        });
         photo_from_gallary=(ImageButton)findViewById(R.id.story_photo_gallary);
         photo_from_gallary.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -116,6 +138,15 @@ public class AddGeoStory extends AppCompatActivity {
             storagePath.mkdirs();
             Log.d("log---G","Geo file created");
         }
+    }
+
+    private void showPreview(Bitmap bitmap) {
+            Dialog mDialog=new Dialog(this);
+            mDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            mDialog.setContentView(R.layout.image_dialog);
+            ImageView mImage=(ImageView)mDialog.findViewById(R.id.popoutImage);
+            mImage.setImageBitmap(bitmap);
+            mDialog.show();
     }
 
     @Override
