@@ -348,7 +348,6 @@ public class MainActivity extends AppCompatActivity {
                                 Log.d("Location","start to request");
                                 mFusedLocationProviderClient.requestLocationUpdates(mLocationRequest, mLocationCallback, null);
 
-
                             } else {
                                 Log.d("Location Client", "Client has Last location");
 //                                clientLocation = location;
@@ -365,8 +364,6 @@ public class MainActivity extends AppCompatActivity {
                                     return;
                                 }
                                 mFusedLocationProviderClient.requestLocationUpdates(mLocationRequest, mLocationCallback, null);
-
-
 
                             }
                         }

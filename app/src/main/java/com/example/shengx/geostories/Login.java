@@ -1,9 +1,14 @@
 package com.example.shengx.geostories;
 
+import android.*;
+import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -29,6 +34,11 @@ import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class Login extends AppCompatActivity {
     EditText  email,password;
     TextView signUp;
@@ -43,7 +53,8 @@ public class Login extends AppCompatActivity {
     FirebaseFirestore db;
     FirebaseUser current_client;
 
-
+    final int PERMISSION_ALL = 1;
+    final String[] PERMISSIONS={ Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.LOCATION_HARDWARE, Manifest.permission.ACCESS_COARSE_LOCATION};;
 
 
 
@@ -93,6 +104,12 @@ public class Login extends AppCompatActivity {
                 googleSignIn();
             }
         });
+
+
+        if(checkAndRequestPermissions()) {
+            // carry on the normal flow, as the case of  permissions  granted.
+        }
+
     }
 
     @Override
@@ -100,10 +117,11 @@ public class Login extends AppCompatActivity {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
-        if(currentUser!=null&&sharedPref.getBoolean(Geocons.FIRST_TIME_SIGN_IN,true)==false){
-            logedIn();
+        if(currentUser!=null&&sharedPref.getBoolean(Geocons.FIRST_TIME_SIGN_IN,true)==false&&checkAndRequestPermissions()){
+               logedIn();
         }
     }
+
 
     public void signIn(String email, String password){
         //username and password check;
@@ -208,14 +226,70 @@ public class Login extends AppCompatActivity {
                 });
         if(sharedPref.getBoolean(Geocons.FIRST_TIME_SIGN_IN,true)){
             Intent firstTimeLogin=new Intent(this, editprofile.class);
-            startActivity(firstTimeLogin);
-            finish();
+                startActivity(firstTimeLogin);
+                finish();
+
+
         }
         else {
-            startActivity(intent);
-            finish();
+
+                startActivity(intent);
+                finish();
+
         }
 
     }
 
+
+
+    private  boolean checkAndRequestPermissions() {
+        int writeExternalStorage = ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        int locationPermission = ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
+        List<String> listPermissionsNeeded = new ArrayList<>();
+        if (locationPermission != PackageManager.PERMISSION_GRANTED) {
+            listPermissionsNeeded.add(Manifest.permission.ACCESS_FINE_LOCATION);
+        }
+        if (writeExternalStorage != PackageManager.PERMISSION_GRANTED) {
+            listPermissionsNeeded.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        }
+        if (!listPermissionsNeeded.isEmpty()) {
+            ActivityCompat.requestPermissions(this, listPermissionsNeeded.toArray(new String[listPermissionsNeeded.size()]),PERMISSION_ALL);
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case PERMISSION_ALL: {
+
+                Map<String, Integer> perms = new HashMap<>();
+                // Initialize the map with both permissions
+                perms.put(Manifest.permission.WRITE_EXTERNAL_STORAGE, PackageManager.PERMISSION_GRANTED);
+                perms.put(Manifest.permission.ACCESS_FINE_LOCATION, PackageManager.PERMISSION_GRANTED);
+                // Fill with actual results from user
+                if (grantResults.length > 0) {
+                    for (int i = 0; i < permissions.length; i++)
+                        perms.put(permissions[i], grantResults[i]);
+                    // Check for both permissions
+                    if (perms.get(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+                            && perms.get(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                        Log.d(TAG, "external storage & location services permission granted");
+                        // process the normal flow
+                        //else any one or both the permissions are not granted
+
+                    } else {
+                        Log.d(TAG, "Some permissions are not granted ask again ");
+                            Toast.makeText(this, "Go to settings and enable permissions", Toast.LENGTH_LONG)
+                                    .show();
+                            //                            //proceed with logic by disabling the related features or quit the app.
+                        checkAndRequestPermissions();
+                    }
+                }
+            }
+        }
+    }
 }
