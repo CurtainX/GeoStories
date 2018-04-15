@@ -39,6 +39,7 @@ android:layout_height="wrap_content">
                     android:id="@+id/profile_img_comment"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
+                    android:layout_marginTop="5dp"
                     android:layout_weight="0"
                     app:srcCompat="@drawable/common_google_signin_btn_icon_dark_normal" />
 
@@ -54,20 +55,24 @@ android:layout_height="wrap_content">
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:layout_weight="0"
-                    android:orientation="horizontal">
+                    android:orientation="vertical">
 
                     <TextView
                         android:id="@+id/username_comment"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_marginBottom="0dp"
                         android:layout_weight="1"
+                        android:gravity="bottom"
                         android:text="TextView" />
 
                     <TextView
                         android:id="@+id/date_comment"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_marginTop="0dp"
                         android:layout_weight="1"
+                        android:gravity="top"
                         android:text="TextView" />
                 </LinearLayout>
 

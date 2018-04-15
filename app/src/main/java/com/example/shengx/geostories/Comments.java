@@ -1,17 +1,23 @@
 package com.example.shengx.geostories;
 
 import android.app.Activity;
+import android.app.Notification;
 import android.content.Intent;
+import android.drm.DrmStore;
 import android.support.v4.view.GravityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.shengx.geostories.Adapters.CommentAdapter;
@@ -43,7 +49,7 @@ public class Comments extends AppCompatActivity {
     CommentAdapter commentAdapter;
     Activity mActivity;
 
-    ImageView send_comment;
+    TextView send_comment;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,8 +62,39 @@ public class Comments extends AppCompatActivity {
         commentText.setFocusable(true);
         commentText.requestFocus();
 
-        send_comment=(ImageView)findViewById(R.id.send_comment);
+        commentText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(final Editable s) {
+                if(commentText.getText().toString().trim().length()>0){
+                    send_comment.setAlpha(1);
+                }
+                else {
+                    send_comment.setAlpha((float) 0.5);
+                }
+            }
+        });
+
+
+        send_comment=(TextView)findViewById(R.id.send_comment);
+        send_comment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(isComment()){
+                    addComment(commentText.getText().toString());
+                    //send_comment.setAlpha((float) 0.5);
+                }
+            }
+        });
         RecyclerView.LayoutManager layoutManager=new LinearLayoutManager(this);
 
         commentList=(RecyclerView)findViewById(R.id.comment_list);
@@ -97,14 +134,7 @@ public class Comments extends AppCompatActivity {
                     }
                 });
 
-        send_comment.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(isComment()){
-                    addComment(commentText.getText().toString());
-                }
-            }
-        });
+
 
     }
 

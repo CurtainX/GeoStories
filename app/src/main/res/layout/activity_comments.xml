@@ -1,14 +1,14 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white">
+    android:orientation="vertical">
 
     <View
+        android:id="@+id/divider"
         android:layout_width="match_parent"
         android:layout_height="0.2dp"
-        android:id="@+id/divider"
-        android:background="@color/half_black"
-        android:layout_weight="0"/>
+        android:layout_weight="0"
+        android:background="@color/half_black" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/comment_list"
@@ -17,11 +17,11 @@
         android:layout_weight="1" />
 
     <View
+        android:id="@+id/divider2"
         android:layout_width="match_parent"
         android:layout_height="0.2dp"
-        android:id="@+id/divider2"
-        android:background="@color/half_black"
-        android:layout_weight="0"/>
+        android:layout_weight="0"
+        android:background="@color/half_black" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -41,13 +41,17 @@
             android:paddingLeft="16dp"
             android:textSize="16sp" />
 
-        <ImageView
+        <TextView
             android:id="@+id/send_comment"
-            android:layout_width="40dp"
+            android:layout_width="50dp"
             android:layout_height="40dp"
             android:layout_weight="0"
-            android:backgroundTint="@color/colorAccent"
-            android:src="@mipmap/ic_arrow_forward_black_24dp"
+            android:alpha="0.5"
+            android:gravity="center"
+            android:imeOptions="actionDone"
+            android:text="Post"
+            android:textAlignment="center"
+            android:textColor="@color/loginBackground"
             android:visibility="visible" />
 
     </LinearLayout>

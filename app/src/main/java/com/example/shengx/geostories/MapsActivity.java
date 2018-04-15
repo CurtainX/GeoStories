@@ -84,6 +84,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     SharedPreferences sharedPreferences;
     Marker story_marker;
 
+    double userWeight;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,11 +107,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         rangeContorller.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
                 initialRange=progress;
                 circle.setRadius(progress);
                 zoomAnimation(progress);
                 story_marker.setTitle(progress+" meters");
                 story_marker.showInfoWindow();
+
             }
 
             @Override
@@ -120,7 +123,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-
             }
         });
         geointent=getIntent();
