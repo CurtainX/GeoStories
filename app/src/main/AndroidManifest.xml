@@ -75,7 +75,11 @@
             android:name=".Comments"
             android:parentActivityName=".MainActivity"
             android:windowSoftInputMode="stateVisible" />
-        <activity android:name=".Adapters.MarkInfoAdapter"></activity>
+        <activity android:name=".Adapters.MarkInfoAdapter" />
+        <activity android:name=".MyGeoStories" />
+        <activity
+            android:name=".ShowGeoStoryMap"
+            android:label="@string/title_activity_show_geo_story_map"></activity>
     </application>
 
 </manifest>

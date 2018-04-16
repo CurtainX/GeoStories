@@ -1,14 +1,12 @@
 package com.example.shengx.geostories.Adapters;
 
+import android.app.Activity;
 import android.app.Dialog;
-import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.os.Environment;
 import android.support.annotation.NonNull;
-import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
@@ -16,12 +14,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.example.shengx.geostories.Comments;
-import com.example.shengx.geostories.Constances.Geocons;
 import com.example.shengx.geostories.Geostory;
 import com.example.shengx.geostories.R;
 import com.example.shengx.geostories.Utility.StoryControlUtility;
@@ -34,58 +30,40 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 
 import id.zelory.compressor.Compressor;
 
 /**
- * Created by SHENG.X on 2018-03-22.
+ * Created by ShengXiao on 2018-04-15.
  */
 
-public class GeostoryCardAdapter extends RecyclerView.Adapter<GeostoryCardAdapter.GeostoryHolder> {
-    List<Geostory> mGeostories;
-    Context context;
+public class ClientGeoSotryAdapter extends RecyclerView.Adapter<ClientGeoSotryAdapter.ClientStoryViewHolder>{
+
+    List<Geostory>mGeostories;
+    Activity context;
+
     FirebaseStorage storage;
     final long ONE_MEGABYTE=1024*1024;
     int story_image_counter=0;
     File storagePath,myFile;
-    String clientID;
-
-
-
-
     StorageReference gsReference_profile_img,gsReference_story_img;
 
 
-    public GeostoryCardAdapter(List<Geostory> mGeostories, Context context, String clientID) {
+    public ClientGeoSotryAdapter(List<Geostory> mGeostories,Activity context) {
         this.mGeostories = mGeostories;
         this.context=context;
-        storage=FirebaseStorage.getInstance();
-        this.clientID=clientID;
-        storagePath= new File(Environment.getExternalStorageDirectory(), "Geo_Images");
-
     }
 
     @Override
-    public long getItemId(int position) {
-        return super.getItemId(position);
-    }
-
-    @Override
-    public int getItemViewType(int position) {
-        return super.getItemViewType(position);
-    }
-
-    @Override
-    public GeostoryHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v= LayoutInflater.from(parent.getContext()).inflate(R.layout.storycard,parent,false);
-        GeostoryHolder vh=new GeostoryHolder(v);
+    public ClientStoryViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View v= LayoutInflater.from(parent.getContext()).inflate(R.layout.client_stories,parent,false);
+        ClientGeoSotryAdapter.ClientStoryViewHolder vh=new ClientGeoSotryAdapter.ClientStoryViewHolder(v);
         return vh;
     }
 
     @Override
-    public void onBindViewHolder(final GeostoryHolder holder, int position) {
+    public void onBindViewHolder(ClientStoryViewHolder holder, int position) {
         Drawable d = context.getResources().getDrawable(R.drawable.common_google_signin_btn_icon_dark_normal);
         holder.geostoryImage.setImageDrawable(d);
         holder.profileImage.setImageDrawable(d);
@@ -102,9 +80,6 @@ public class GeostoryCardAdapter extends RecyclerView.Adapter<GeostoryCardAdapte
         int height_in_pixels = holder.geostory.getLineCount() * holder.geostory.getLineHeight();
         holder.geostory.setHeight(height_in_pixels);
         holder.geostory.setMovementMethod(new ScrollingMovementMethod());
-        StoryControlUtility.checkLiked(storyID,clientID,holder.like,context);
-        StoryControlUtility.likeCounter(storyID,holder.likecounter);
-        StoryControlUtility.commentCounter(storyID,holder.commnentcounter);
         holder.geostoryImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -139,30 +114,6 @@ public class GeostoryCardAdapter extends RecyclerView.Adapter<GeostoryCardAdapte
                 }
             }
         });
-        holder.like.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                StoryControlUtility.likeStory(storyID,clientID,holder.like,context);
-
-            }
-        });
-        holder.comment.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent=new Intent(context,Comments.class);
-                intent.putExtra(Geocons.COMMENT_INTENT_EXTRA,storyID);
-                intent.putExtra(Geocons.CLIENT_NAME,clientName);
-                context.startActivity(intent);
-                Toast.makeText(v.getContext(),"comment-->"+storyID,Toast.LENGTH_LONG).show();
-            }
-        });
-//        holder.dismiss.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                StoryControlUtility.dismissStory(holder);
-//                Toast.makeText(v.getContext(),"dissmiss",Toast.LENGTH_LONG).show();
-//            }
-//        });
     }
 
     @Override
@@ -170,15 +121,36 @@ public class GeostoryCardAdapter extends RecyclerView.Adapter<GeostoryCardAdapte
         return mGeostories.size();
     }
 
-    public void addStory(List<Geostory> geostories){
-        Collections.reverse(geostories);
+    public void addClientStories(List<Geostory> geostories){
         mGeostories.clear();
         mGeostories.addAll(geostories);
+    }
 
+    private void showDialog(Bitmap bitmap) {
+        Dialog mDialog=new Dialog(context);
+        mDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        mDialog.setContentView(R.layout.image_dialog);
+        ImageView mImage=(ImageView)mDialog.findViewById(R.id.popoutImage);
+        mImage.setImageBitmap(bitmap);
+        mDialog.show();
     }
 
 
 
+
+    private void showProfileDialog(Bitmap bitmap, String username) {
+        Dialog mDialog=new Dialog(context);
+        mDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        mDialog.setContentView(R.layout.previewprofile);
+        ImageView profile_pre=(ImageView)mDialog.findViewById(R.id.profile_preview_photo);
+        TextView username_pre=(TextView)mDialog.findViewById(R.id.profile_preview_username);
+        TextView aboout_pre=(TextView)mDialog.findViewById(R.id.profile_preview_about);
+        StoryControlUtility.getAboutStoryOwner(username,aboout_pre);
+        profile_pre.setImageBitmap(bitmap);
+        username_pre.setText(username);
+        //aboout_pre.setText(about);
+        mDialog.show();
+    }
 
     public void updateProfileImage(final String client_id, final ImageView profileImage) {
         String photoPath = Environment.getExternalStorageDirectory() + "/Geo_Images/" + client_id + ".jpg";
@@ -285,58 +257,22 @@ public class GeostoryCardAdapter extends RecyclerView.Adapter<GeostoryCardAdapte
         storyImage.setTag("Updated");
     }
 
-    public class GeostoryHolder extends RecyclerView.ViewHolder{
+    public class ClientStoryViewHolder extends RecyclerView.ViewHolder{
         ImageView profileImage;
-        TextView username, datePosted, geostory, likecounter,commnentcounter;
+        TextView username, datePosted, geostory;
         ImageView geostoryImage;
-        ImageView like, comment,dismiss;
-        ConstraintLayout imageViewHolder;
-
-        public GeostoryHolder(View itemView) {
+        Button showMap, delete;
+        public ClientStoryViewHolder(View itemView) {
             super(itemView);
-            profileImage=(ImageView) itemView.findViewById(R.id.profileImage_cd);
-            username=(TextView)itemView.findViewById(R.id.username_cd);
-            datePosted=(TextView)itemView.findViewById(R.id.dateposted_cd);
-            geostory=(TextView)itemView.findViewById(R.id.geostory_cd);
-            geostoryImage=(ImageView)itemView.findViewById(R.id.geostoryimage_cd);
-            like=(ImageView)itemView.findViewById(R.id.like_cd);
-            comment=(ImageView)itemView.findViewById(R.id.my_delete);
-//            dismiss=(ImageView)itemView.findViewById(R.id.dismiss_cd);
-            likecounter=(TextView)itemView.findViewById(R.id.like_counter);
-            commnentcounter=(TextView)itemView.findViewById(R.id.comment_counter);
-            imageViewHolder=(ConstraintLayout)itemView.findViewById(R.id.display_counter);
+            profileImage=(ImageView) itemView.findViewById(R.id.my_profileImage_cd);
+            username=(TextView)itemView.findViewById(R.id.my_username_cd);
+            datePosted=(TextView)itemView.findViewById(R.id.my_dateposted_cd);
+            geostory=(TextView)itemView.findViewById(R.id.my_geostory_cd);
+            geostoryImage=(ImageView)itemView.findViewById(R.id.my_geostoryimage_cd);
             geostoryImage.setTag("not updated");
             profileImage.setTag("not updated");
+            showMap=(Button)itemView.findViewById(R.id.my_show_on_map_cd);
+            delete=(Button)itemView.findViewById(R.id.my_delete);
         }
-    }
-
-
-
-
-
-    private void showDialog(Bitmap bitmap) {
-       Dialog mDialog=new Dialog(context);
-        mDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        mDialog.setContentView(R.layout.image_dialog);
-        ImageView mImage=(ImageView)mDialog.findViewById(R.id.popoutImage);
-        mImage.setImageBitmap(bitmap);
-        mDialog.show();
-    }
-
-
-
-
-    private void showProfileDialog(Bitmap bitmap, String username) {
-        Dialog mDialog=new Dialog(context);
-        mDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        mDialog.setContentView(R.layout.previewprofile);
-        ImageView profile_pre=(ImageView)mDialog.findViewById(R.id.profile_preview_photo);
-        TextView username_pre=(TextView)mDialog.findViewById(R.id.profile_preview_username);
-        TextView aboout_pre=(TextView)mDialog.findViewById(R.id.profile_preview_about);
-        StoryControlUtility.getAboutStoryOwner(username,aboout_pre);
-        profile_pre.setImageBitmap(bitmap);
-        username_pre.setText(username);
-        //aboout_pre.setText(about);
-        mDialog.show();
     }
 }
