@@ -541,5 +541,5 @@ public class editprofile extends AppCompatActivity {
         intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
         startActivityForResult(intent, REQUEST_IMAGE_CAPTURE);
     }
-    
+
 }
