@@ -16,6 +16,7 @@ public class Geostory {
     String latitude;
     String longitude;
     String clientID;
+    String range;
 
     public Geostory( String storyID,String clientID, Bitmap profile_image, Bitmap story_image, String username, String datePosted, String geostory, String latitude, String longitude) {
         this.profile_image = profile_image;
@@ -28,6 +29,21 @@ public class Geostory {
         this.longitude = longitude;
         this.clientID=clientID;
     }
+
+
+    public Geostory(String storyID, String clientID, Bitmap profile_image, Bitmap story_image, String username, String datePosted, String geostory, String latitude, String longitude, String range) {
+        this.profile_image = profile_image;
+        this.story_image = story_image;
+        this.username = username;
+        this.datePosted = datePosted;
+        this.geostory = geostory;
+        this.storyID = storyID;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.clientID=clientID;
+        this.range=range;
+    }
+
 
     public Geostory( String storyID, String clientID,Bitmap profile_image, Bitmap story_image, String username, String datePosted, String geostory) {
         this.profile_image = profile_image;
@@ -117,5 +133,12 @@ public class Geostory {
 
     public void setLongitude(String longitude) {
         this.longitude = longitude;
+    }
+    public String getRange() {
+        return range;
+    }
+
+    public void setRange(String range) {
+        this.range = range;
     }
 }

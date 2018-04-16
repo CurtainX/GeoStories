@@ -20,6 +20,7 @@ public class Geocons {
     public static final String COMMENT_INTENT_EXTRA="comment_extra";
     public static final String COMMENT_CONTENT="comment_content";
     public static final String COMMENT_DATE="comment_date";
+    public static final String GEO_RANGE="visible_range";
 
     public class DBcons{
         public static final String GEOSTORY_DB="geostorys";

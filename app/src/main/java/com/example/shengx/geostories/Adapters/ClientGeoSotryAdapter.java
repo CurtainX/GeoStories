@@ -2,6 +2,8 @@ package com.example.shengx.geostories.Adapters;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
@@ -18,8 +20,10 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.shengx.geostories.Constances.Geocons;
 import com.example.shengx.geostories.Geostory;
 import com.example.shengx.geostories.R;
+import com.example.shengx.geostories.ShowGeoStoryMap;
 import com.example.shengx.geostories.Utility.StoryControlUtility;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -41,7 +45,7 @@ import id.zelory.compressor.Compressor;
 public class ClientGeoSotryAdapter extends RecyclerView.Adapter<ClientGeoSotryAdapter.ClientStoryViewHolder>{
 
     List<Geostory>mGeostories;
-    Activity context;
+    Context context;
 
     FirebaseStorage storage;
     final long ONE_MEGABYTE=1024*1024;
@@ -50,27 +54,30 @@ public class ClientGeoSotryAdapter extends RecyclerView.Adapter<ClientGeoSotryAd
     StorageReference gsReference_profile_img,gsReference_story_img;
 
 
-    public ClientGeoSotryAdapter(List<Geostory> mGeostories,Activity context) {
+    public ClientGeoSotryAdapter(List<Geostory> mGeostories,Context context) {
         this.mGeostories = mGeostories;
         this.context=context;
+        storage=FirebaseStorage.getInstance();
+        storagePath= new File(Environment.getExternalStorageDirectory(), "Geo_Images");
     }
 
     @Override
     public ClientStoryViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v= LayoutInflater.from(parent.getContext()).inflate(R.layout.client_stories,parent,false);
-        ClientGeoSotryAdapter.ClientStoryViewHolder vh=new ClientGeoSotryAdapter.ClientStoryViewHolder(v);
+        ClientStoryViewHolder vh=new ClientStoryViewHolder(v);
         return vh;
     }
 
     @Override
     public void onBindViewHolder(ClientStoryViewHolder holder, int position) {
+        Log.d("MY-POSITION",position+"");
         Drawable d = context.getResources().getDrawable(R.drawable.common_google_signin_btn_icon_dark_normal);
         holder.geostoryImage.setImageDrawable(d);
         holder.profileImage.setImageDrawable(d);
         updateProfileImage(mGeostories.get(position).getClientID(),holder.profileImage);
         updateStoryImage(mGeostories.get(position).getStoryID(),holder.geostoryImage);
 
-        final String storyID,storyOwnerID,clientName;
+        final String storyID,storyOwnerID,clientName, latitude,longitude,range;
         storyID=mGeostories.get(position).getStoryID();
         storyOwnerID=mGeostories.get(position).getClientID();
         clientName=mGeostories.get(position).getUsername();
@@ -114,6 +121,24 @@ public class ClientGeoSotryAdapter extends RecyclerView.Adapter<ClientGeoSotryAd
                 }
             }
         });
+        latitude=mGeostories.get(position).getLatitude();
+        longitude=mGeostories.get(position).getLongitude();
+        range=mGeostories.get(position).getRange();
+        holder.showMap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(context, ShowGeoStoryMap.class);
+                intent.putExtra(Geocons.GEO_LATITUDE,latitude);
+                intent.putExtra(Geocons.GEO_LONGITUDE,longitude);
+                intent.putExtra(Geocons.GEO_RANGE,range);
+                context.startActivity(intent);
+            }
+        });
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return super.getItemViewType(position);
     }
 
     @Override

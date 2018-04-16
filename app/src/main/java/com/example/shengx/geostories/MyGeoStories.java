@@ -1,9 +1,11 @@
 package com.example.shengx.geostories;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 
 import com.example.shengx.geostories.Adapters.ClientGeoSotryAdapter;
 import com.example.shengx.geostories.Constances.Geocons;
@@ -30,30 +32,19 @@ public class MyGeoStories extends AppCompatActivity {
     RecyclerView clientStories;
     RecyclerView.LayoutManager layoutManager;
 
+    Activity mActivity;
 
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_my_geo_stories);
-        client= FirebaseAuth.getInstance().getCurrentUser();
-        clientID=client.getUid();
-
-
-        layoutManager=new LinearLayoutManager(this);
-        clientGeoSotryAdapter=new ClientGeoSotryAdapter(mGeostories,this);
-        clientStories=(RecyclerView)findViewById(R.id.my_geostories_list);
-        clientStories.setHasFixedSize(true);
-        clientStories.setLayoutManager(layoutManager);
-        clientStories.setAdapter(clientGeoSotryAdapter);
-
-
+    protected void onStart() {
+        super.onStart();
         db.collection(Geocons.DBcons.GEOSTORY_DB)
                 .whereEqualTo(Geocons.CLIENT_ID,clientID)
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
                     public void onSuccess(QuerySnapshot documentSnapshots) {
+                        mGeostories.clear();
                         for(DocumentSnapshot story:documentSnapshots){
                             mGeostories.add(new Geostory(String.valueOf(story.getId()),
                                     String.valueOf(story.get(Geocons.CLIENT_ID)),
@@ -63,11 +54,41 @@ public class MyGeoStories extends AppCompatActivity {
                                     String.valueOf(story.get(Geocons.POSTED_TIME)),
                                     String.valueOf(story.get(Geocons.GEO_STORY)),
                                     String.valueOf(story.get(Geocons.GEO_LATITUDE)),
-                                    String.valueOf(story.get(Geocons.GEO_LONGITUDE))));
+                                    String.valueOf(story.get(Geocons.GEO_LONGITUDE)),
+                                    String.valueOf(story.get(Geocons.GEO_RANGE))));
+                            Log.d("My--","updated");
                         }
-                        clientGeoSotryAdapter.addClientStories(mGeostories);
-                        clientGeoSotryAdapter.notifyDataSetChanged();
+//                        clientGeoSotryAdapter.addClientStories(mGeostories);
+
+                        clientGeoSotryAdapter=new ClientGeoSotryAdapter(mGeostories,mActivity);
+                        clientStories.setAdapter(clientGeoSotryAdapter);
+//                        clientGeoSotryAdapter.notifyDataSetChanged();
+
                     }
                 });
+
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_my_geo_stories);
+        client= FirebaseAuth.getInstance().getCurrentUser();
+        clientID=client.getUid();
+
+        db=FirebaseFirestore.getInstance();
+
+        mActivity=this;
+
+        layoutManager=new LinearLayoutManager(this);
+        clientGeoSotryAdapter=new ClientGeoSotryAdapter(mGeostories,this);
+        clientStories=(RecyclerView)findViewById(R.id.my_geostories_list);
+        clientStories.setHasFixedSize(true);
+        clientStories.setLayoutManager(layoutManager);
+        clientStories.setAdapter(clientGeoSotryAdapter);
+
+
+
+
     }
 }

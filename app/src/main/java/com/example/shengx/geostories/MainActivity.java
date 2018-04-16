@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
 
     private DrawerLayout mDrawerLayout;
 
-    private LocationRequest mLocationRequest,mLocationRequest2;
+    private LocationRequest mLocationRequest, mLocationRequest2;
     private LocationCallback mLocationCallback;
 
 
@@ -107,10 +107,8 @@ public class MainActivity extends AppCompatActivity {
     ProgressDialog waitingProgree;
 
 
-
     private Bundle mBundleRecyclerViewState;
-    private String LIST_STATE_KEY="rec_pos";
-
+    private String LIST_STATE_KEY = "rec_pos";
 
 
     @Override
@@ -121,6 +119,20 @@ public class MainActivity extends AppCompatActivity {
             Parcelable listState = mBundleRecyclerViewState.getParcelable(LIST_STATE_KEY);
             geostoryList.getLayoutManager().onRestoreInstanceState(listState);
         }
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        else {
+            mFusedLocationProviderClient.requestLocationUpdates(mLocationRequest, mLocationCallback, null);
+
+        }
     }
 
     @Override
@@ -130,6 +142,9 @@ public class MainActivity extends AppCompatActivity {
         mBundleRecyclerViewState = new Bundle();
         Parcelable listState = geostoryList.getLayoutManager().onSaveInstanceState();
         mBundleRecyclerViewState.putParcelable(LIST_STATE_KEY, listState);
+        if(mLocationCallback!=null){
+            mFusedLocationProviderClient.removeLocationUpdates(mLocationCallback);
+        }
     }
 
     @Override
@@ -230,6 +245,9 @@ public class MainActivity extends AppCompatActivity {
                                 Intent intent2 = new Intent(getApplicationContext(), editprofile.class);
                                 startActivity(intent2);
                                 break;
+                            case R.id.nav_browse_my_stories:
+                                Intent intent3=new Intent(getApplicationContext(),MyGeoStories.class);
+                                startActivity(intent3);
                         }
 
                         // Add code here to update the UI based on the item selected

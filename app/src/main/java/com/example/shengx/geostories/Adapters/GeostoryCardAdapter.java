@@ -300,7 +300,7 @@ public class GeostoryCardAdapter extends RecyclerView.Adapter<GeostoryCardAdapte
             geostory=(TextView)itemView.findViewById(R.id.geostory_cd);
             geostoryImage=(ImageView)itemView.findViewById(R.id.geostoryimage_cd);
             like=(ImageView)itemView.findViewById(R.id.like_cd);
-            comment=(ImageView)itemView.findViewById(R.id.my_delete);
+            comment=(ImageView)itemView.findViewById(R.id.comment_cd);
 //            dismiss=(ImageView)itemView.findViewById(R.id.dismiss_cd);
             likecounter=(TextView)itemView.findViewById(R.id.like_counter);
             commnentcounter=(TextView)itemView.findViewById(R.id.comment_counter);

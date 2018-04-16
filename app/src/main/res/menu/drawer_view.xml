@@ -5,6 +5,12 @@
             android:id="@+id/nav_editprofile"
             android:icon="@drawable/ic_camera_white_24dp"
             android:title="editprofile" />
+
+        <item
+            android:id="@+id/nav_browse_my_stories"
+            android:icon="@drawable/ic_camera_white_24dp"
+            android:title="mystories" />
+
         <item
             android:id="@+id/nav_signout"
             android:icon="@drawable/ic_exit_to_app_black_24dp"
