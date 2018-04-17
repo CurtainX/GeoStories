@@ -6,6 +6,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.example.shengx.geostories.Adapters.ClientGeoSotryAdapter;
 import com.example.shengx.geostories.Constances.Geocons;
@@ -13,7 +15,9 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
@@ -38,12 +42,43 @@ public class MyGeoStories extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        db.collection(Geocons.DBcons.GEOSTORY_DB)
-                .whereEqualTo(Geocons.CLIENT_ID,clientID)
-                .get()
-                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+//        db.collection(Geocons.DBcons.GEOSTORY_DB)
+//                .whereEqualTo(Geocons.CLIENT_ID,clientID)
+//                .get()
+//                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+//                    @Override
+//                    public void onSuccess(QuerySnapshot documentSnapshots) {
+//                        mGeostories.clear();
+//                        for(DocumentSnapshot story:documentSnapshots){
+//                            mGeostories.add(new Geostory(String.valueOf(story.getId()),
+//                                    String.valueOf(story.get(Geocons.CLIENT_ID)),
+//                                    null,
+//                                    null,
+//                                    String.valueOf(story.get(Geocons.CLIENT_NAME)),
+//                                    String.valueOf(story.get(Geocons.POSTED_TIME)),
+//                                    String.valueOf(story.get(Geocons.GEO_STORY)),
+//                                    String.valueOf(story.get(Geocons.GEO_LATITUDE)),
+//                                    String.valueOf(story.get(Geocons.GEO_LONGITUDE)),
+//                                    String.valueOf(story.get(Geocons.GEO_RANGE))));
+//                            Log.d("My--","updated");
+//                        }
+////                        clientGeoSotryAdapter.addClientStories(mGeostories);
+//
+//                        clientGeoSotryAdapter=new ClientGeoSotryAdapter(mGeostories,mActivity);
+//                        clientStories.setAdapter(clientGeoSotryAdapter);
+////                        clientGeoSotryAdapter.notifyDataSetChanged();
+//
+//                    }
+//                });
+
+                db.collection(Geocons.DBcons.GEOSTORY_DB)
+                .whereEqualTo(Geocons.CLIENT_ID,clientID).addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
-                    public void onSuccess(QuerySnapshot documentSnapshots) {
+                    public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+                        if (e != null) {
+                            Log.w("Log", "Listen failed.", e);
+                            return;
+                        }
                         mGeostories.clear();
                         for(DocumentSnapshot story:documentSnapshots){
                             mGeostories.add(new Geostory(String.valueOf(story.getId()),
@@ -58,12 +93,8 @@ public class MyGeoStories extends AppCompatActivity {
                                     String.valueOf(story.get(Geocons.GEO_RANGE))));
                             Log.d("My--","updated");
                         }
-//                        clientGeoSotryAdapter.addClientStories(mGeostories);
-
                         clientGeoSotryAdapter=new ClientGeoSotryAdapter(mGeostories,mActivity);
                         clientStories.setAdapter(clientGeoSotryAdapter);
-//                        clientGeoSotryAdapter.notifyDataSetChanged();
-
                     }
                 });
 
@@ -87,8 +118,16 @@ public class MyGeoStories extends AppCompatActivity {
         clientStories.setLayoutManager(layoutManager);
         clientStories.setAdapter(clientGeoSotryAdapter);
 
-
-
-
     }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+            default:
+                return  super.onOptionsItemSelected(item);
+        }
+    }
+
 }

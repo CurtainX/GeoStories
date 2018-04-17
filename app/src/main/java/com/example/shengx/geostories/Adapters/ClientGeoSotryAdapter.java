@@ -3,12 +3,14 @@ package com.example.shengx.geostories.Adapters;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.os.Environment;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
@@ -19,6 +21,7 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.shengx.geostories.Constances.Geocons;
 import com.example.shengx.geostories.Geostory;
@@ -27,6 +30,7 @@ import com.example.shengx.geostories.ShowGeoStoryMap;
 import com.example.shengx.geostories.Utility.StoryControlUtility;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -53,11 +57,13 @@ public class ClientGeoSotryAdapter extends RecyclerView.Adapter<ClientGeoSotryAd
     File storagePath,myFile;
     StorageReference gsReference_profile_img,gsReference_story_img;
 
+    FirebaseFirestore db;
 
     public ClientGeoSotryAdapter(List<Geostory> mGeostories,Context context) {
         this.mGeostories = mGeostories;
         this.context=context;
         storage=FirebaseStorage.getInstance();
+        db=FirebaseFirestore.getInstance();
         storagePath= new File(Environment.getExternalStorageDirectory(), "Geo_Images");
     }
 
@@ -69,7 +75,7 @@ public class ClientGeoSotryAdapter extends RecyclerView.Adapter<ClientGeoSotryAd
     }
 
     @Override
-    public void onBindViewHolder(ClientStoryViewHolder holder, int position) {
+    public void onBindViewHolder(final ClientStoryViewHolder holder, final int position) {
         Log.d("MY-POSITION",position+"");
         Drawable d = context.getResources().getDrawable(R.drawable.common_google_signin_btn_icon_dark_normal);
         holder.geostoryImage.setImageDrawable(d);
@@ -77,15 +83,22 @@ public class ClientGeoSotryAdapter extends RecyclerView.Adapter<ClientGeoSotryAd
         updateProfileImage(mGeostories.get(position).getClientID(),holder.profileImage);
         updateStoryImage(mGeostories.get(position).getStoryID(),holder.geostoryImage);
 
-        final String storyID,storyOwnerID,clientName, latitude,longitude,range;
+        final String storyID,storyOwnerID,clientName, latitude,longitude,range,postedDate,geostory;
         storyID=mGeostories.get(position).getStoryID();
         storyOwnerID=mGeostories.get(position).getClientID();
         clientName=mGeostories.get(position).getUsername();
+        postedDate=mGeostories.get(position).getDatePosted();
+        geostory=mGeostories.get(position).getGeostory();
         holder.username.setText(clientName);
         holder.datePosted.setText(mGeostories.get(position).getDatePosted());
         holder.geostory.setText(mGeostories.get(position).getGeostory());
         int height_in_pixels = holder.geostory.getLineCount() * holder.geostory.getLineHeight();
         holder.geostory.setHeight(height_in_pixels);
+
+        StoryControlUtility.likeCounter(storyID,holder.likecount);
+        StoryControlUtility.commentCounter(storyID,holder.commentcount);
+
+
         holder.geostory.setMovementMethod(new ScrollingMovementMethod());
         holder.geostoryImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -131,7 +144,21 @@ public class ClientGeoSotryAdapter extends RecyclerView.Adapter<ClientGeoSotryAd
                 intent.putExtra(Geocons.GEO_LATITUDE,latitude);
                 intent.putExtra(Geocons.GEO_LONGITUDE,longitude);
                 intent.putExtra(Geocons.GEO_RANGE,range);
+                intent.putExtra(Geocons.CLIENT_NAME,clientName);
+                intent.putExtra(Geocons.STORY_OWNER_ICON_LINK,storyOwnerID);
+                intent.putExtra(Geocons.STORY_IMAGE_LINK,storyID);
+                intent.putExtra(Geocons.GEO_STORY,geostory);
+                intent.putExtra(Geocons.POSTED_TIME,postedDate);
+                //intent.putExtra(Geocons.LIKE_NUM,holder.likecount.getTag().toString());
+                //intent.putExtra(Geocons.COMMENT_NUM,holder.commentcount.getTag().toString());
                 context.startActivity(intent);
+            }
+        });
+        holder.delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //deleteMystory(storyID);
+                showConfirmDialog(storyID);
             }
         });
     }
@@ -157,7 +184,9 @@ public class ClientGeoSotryAdapter extends RecyclerView.Adapter<ClientGeoSotryAd
         mDialog.setContentView(R.layout.image_dialog);
         ImageView mImage=(ImageView)mDialog.findViewById(R.id.popoutImage);
         mImage.setImageBitmap(bitmap);
-        mDialog.show();
+        if(bitmap!=null){
+            mDialog.show();
+        }
     }
 
 
@@ -282,11 +311,41 @@ public class ClientGeoSotryAdapter extends RecyclerView.Adapter<ClientGeoSotryAd
         storyImage.setTag("Updated");
     }
 
+
+    public void showConfirmDialog(final String storyID){
+        new AlertDialog.Builder(context)
+                .setTitle("GeoStory")
+                .setMessage("Do you really want to delete?")
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        deleteMystory(storyID);
+                    }})
+                .setNegativeButton(android.R.string.no, null).show();
+    }
+
+    public void deleteMystory(String storyID){
+        db.collection(Geocons.DBcons.GEOSTORY_DB)
+                .document(storyID).delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Toast.makeText(context,"Story Deleted", Toast.LENGTH_SHORT).show();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(context,"Network Issue Please Try Again", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+    }
     public class ClientStoryViewHolder extends RecyclerView.ViewHolder{
         ImageView profileImage;
-        TextView username, datePosted, geostory;
+        TextView username, datePosted, geostory, likecount, commentcount;
         ImageView geostoryImage;
-        Button showMap, delete;
+        ImageView showMap, delete;
         public ClientStoryViewHolder(View itemView) {
             super(itemView);
             profileImage=(ImageView) itemView.findViewById(R.id.my_profileImage_cd);
@@ -296,8 +355,10 @@ public class ClientGeoSotryAdapter extends RecyclerView.Adapter<ClientGeoSotryAd
             geostoryImage=(ImageView)itemView.findViewById(R.id.my_geostoryimage_cd);
             geostoryImage.setTag("not updated");
             profileImage.setTag("not updated");
-            showMap=(Button)itemView.findViewById(R.id.my_show_on_map_cd);
-            delete=(Button)itemView.findViewById(R.id.my_delete);
+            showMap=(ImageView)itemView.findViewById(R.id.my_show_on_map_cd);
+            delete=(ImageView)itemView.findViewById(R.id.my_delete);
+            likecount=(TextView)itemView.findViewById(R.id.like_counter_mp);
+            commentcount=(TextView)itemView.findViewById(R.id.comment_counter_mp);
         }
     }
 }

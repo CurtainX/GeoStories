@@ -21,7 +21,10 @@ public class Geocons {
     public static final String COMMENT_CONTENT="comment_content";
     public static final String COMMENT_DATE="comment_date";
     public static final String GEO_RANGE="visible_range";
-
+    public static final String STORY_OWNER_ICON_LINK="owner_icon_link";
+    public static final String STORY_IMAGE_LINK="story_image_link";
+    public static final String LIKE_NUM="likenum";
+    public static final String COMMENT_NUM="commentnum";
     public class DBcons{
         public static final String GEOSTORY_DB="geostorys";
         public static final String USER_DB="users";

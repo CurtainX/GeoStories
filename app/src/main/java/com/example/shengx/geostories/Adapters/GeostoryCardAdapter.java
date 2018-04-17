@@ -315,12 +315,14 @@ public class GeostoryCardAdapter extends RecyclerView.Adapter<GeostoryCardAdapte
 
 
     private void showDialog(Bitmap bitmap) {
-       Dialog mDialog=new Dialog(context);
+        Dialog mDialog=new Dialog(context);
         mDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         mDialog.setContentView(R.layout.image_dialog);
         ImageView mImage=(ImageView)mDialog.findViewById(R.id.popoutImage);
         mImage.setImageBitmap(bitmap);
-        mDialog.show();
+        if(bitmap!=null){
+            mDialog.show();
+        }
     }
 
 

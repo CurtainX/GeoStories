@@ -1,10 +1,12 @@
 package com.example.shengx.geostories;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 
+import com.example.shengx.geostories.Adapters.ClientStoryInfoAdapter;
 import com.example.shengx.geostories.Constances.Geocons;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -13,6 +15,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 public class ShowGeoStoryMap extends FragmentActivity implements OnMapReadyCallback {
@@ -20,9 +23,11 @@ public class ShowGeoStoryMap extends FragmentActivity implements OnMapReadyCallb
     private GoogleMap mMap;
     double latitude, longitude;
     int range;
+    String profileImage_link, storyImage_link,username, postedDate, storyContent;
+    int likeNum, commentNum;
     Intent intent;
     private Circle circle;
-
+    Marker storyInfoMark;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +41,14 @@ public class ShowGeoStoryMap extends FragmentActivity implements OnMapReadyCallb
         latitude=Double.parseDouble(intent.getStringExtra(Geocons.GEO_LATITUDE));
         longitude=Double.parseDouble(intent.getStringExtra(Geocons.GEO_LONGITUDE));
         range=Integer.parseInt(intent.getStringExtra(Geocons.GEO_RANGE));
+        profileImage_link=intent.getStringExtra(Geocons.STORY_OWNER_ICON_LINK);
+        storyImage_link=intent.getStringExtra(Geocons.STORY_IMAGE_LINK);
+        username=intent.getStringExtra(Geocons.CLIENT_NAME);
+        postedDate=intent.getStringExtra(Geocons.POSTED_TIME);
+        storyContent=intent.getStringExtra(Geocons.GEO_STORY);
+        //likeNum=Integer.parseInt(intent.getStringExtra(Geocons.LIKE_NUM));
+        //commentNum=Integer.parseInt(intent.getStringExtra(Geocons.COMMENT_NUM));
+
     }
 
 
@@ -51,12 +64,12 @@ public class ShowGeoStoryMap extends FragmentActivity implements OnMapReadyCallb
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
+        mMap.setInfoWindowAdapter(new ClientStoryInfoAdapter(this,profileImage_link,storyImage_link,username,postedDate,storyContent,likeNum,commentNum,range));
         // Add a marker in Sydney and move the camera
 
         LatLng mystory = new LatLng(latitude, longitude);
 
-        mMap.addMarker(new MarkerOptions().position(mystory).title("My story Point"));
+        storyInfoMark=mMap.addMarker(new MarkerOptions().position(mystory).title("My story Point"));
         circle = mMap.addCircle(new CircleOptions()
                 .center(new LatLng(latitude,longitude))
                 .radius(range)
@@ -64,6 +77,8 @@ public class ShowGeoStoryMap extends FragmentActivity implements OnMapReadyCallb
                 .strokeWidth(2)
                 .fillColor(Color.TRANSPARENT));
         zoomAnimation(range);
+        storyInfoMark.showInfoWindow();
+
     }
 
 

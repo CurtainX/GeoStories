@@ -109,32 +109,68 @@
                     android:orientation="horizontal"
                     android:visibility="visible">
 
-                    <Button
+
+                    <ImageView
                         android:id="@+id/my_show_on_map_cd"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
                         android:layout_marginBottom="8dp"
                         android:layout_marginEnd="16dp"
                         android:layout_marginTop="8dp"
                         android:layout_weight="1"
+                        android:src="@drawable/ic_pin_drop_black_24dp"
                         android:text="Show on map"
+                        android:tint="@color/dislikeStory"
                         card_view:layout_constraintBottom_toBottomOf="parent"
                         card_view:layout_constraintEnd_toStartOf="@+id/my_delete"
                         card_view:layout_constraintTop_toTopOf="parent" />
 
-                    <Button
+                    <ImageView
                         android:id="@+id/my_delete"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
                         android:layout_marginBottom="8dp"
                         android:layout_marginEnd="16dp"
                         android:layout_marginTop="8dp"
                         android:layout_weight="1"
-                        android:text="Comment"
+                        android:src="@drawable/ic_delete_black_24dp"
+                        android:text="Delete"
+                        android:tint="@color/dislikeStory"
                         card_view:layout_constraintBottom_toBottomOf="parent"
                         card_view:layout_constraintEnd_toEndOf="parent"
                         card_view:layout_constraintTop_toTopOf="parent" />
 
+                </android.support.constraint.ConstraintLayout>
+
+                <android.support.constraint.ConstraintLayout
+                    android:id="@+id/display_counter"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginTop="5dp"
+                    android:orientation="horizontal"
+                    android:visibility="visible">
+
+
+                    <TextView
+                        android:id="@+id/like_counter_mp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="0 Like"
+                        android:visibility="visible"
+                        card_view:layout_constraintStart_toStartOf="parent"
+                        tools:layout_editor_absoluteY="1dp" />
+
+                    <TextView
+                        android:id="@+id/comment_counter_mp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:text="0 Comment"
+                        android:visibility="visible"
+                        card_view:layout_constraintStart_toEndOf="@+id/like_counter_mp"
+                        tools:layout_editor_absoluteY="1dp" />
                 </android.support.constraint.ConstraintLayout>
 
             </LinearLayout>

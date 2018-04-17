@@ -155,6 +155,7 @@ public class StoryControlUtility {
                     likeView.setVisibility(View.VISIBLE);
                     likeView.setText(likecount+" "+postFix);
                 }
+                likeView.setTag(likecount);
 
                 }
         });
@@ -189,6 +190,7 @@ public class StoryControlUtility {
                     commentView.setVisibility(View.VISIBLE);
                     commentView.setText(commentcount+" "+postFix);
                 }
+                commentView.setTag(commentcount);
             }
         });
     }

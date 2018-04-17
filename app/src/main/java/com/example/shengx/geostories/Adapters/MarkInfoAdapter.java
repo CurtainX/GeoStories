@@ -15,6 +15,9 @@ public class MarkInfoAdapter implements GoogleMap.InfoWindowAdapter{
 
     Context context;
     LayoutInflater inflater;
+    public MarkInfoAdapter(){
+
+    }
     public MarkInfoAdapter(Context context) {
         this.context = context;
     }
