@@ -146,7 +146,7 @@ public class MainActivity extends AppCompatActivity {
         if(mLocationCallback!=null){
             mFusedLocationProviderClient.removeLocationUpdates(mLocationCallback);
         }
-        waitingProgree.dismiss();
+        //waitingProgree.dismiss();
     }
 
     @Override
@@ -307,8 +307,7 @@ public class MainActivity extends AppCompatActivity {
         userabout.setText(sharedPreferences.getString("about", ""));
         Log.d("Log", "success-->");
 
-        myintent = new Intent(this, NotifyNewGeoStory.class);
-        startService(myintent);
+
 
 
     }
