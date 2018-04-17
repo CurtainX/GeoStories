@@ -36,6 +36,7 @@ import android.widget.TextView;
 
 import com.example.shengx.geostories.Adapters.GeostoryCardAdapter;
 import com.example.shengx.geostories.Constances.Geocons;
+import com.example.shengx.geostories.NotificationService.NotifyNewGeoStory;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
@@ -105,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
     Activity mActivity;
 
     ProgressDialog waitingProgree;
-
+    Intent myintent;
 
     private Bundle mBundleRecyclerViewState;
     private String LIST_STATE_KEY = "rec_pos";
@@ -145,6 +146,7 @@ public class MainActivity extends AppCompatActivity {
         if(mLocationCallback!=null){
             mFusedLocationProviderClient.removeLocationUpdates(mLocationCallback);
         }
+        waitingProgree.dismiss();
     }
 
     @Override
@@ -304,6 +306,9 @@ public class MainActivity extends AppCompatActivity {
         username.setText(sharedPreferences.getString("username", ""));
         userabout.setText(sharedPreferences.getString("about", ""));
         Log.d("Log", "success-->");
+
+        myintent = new Intent(this, NotifyNewGeoStory.class);
+        startService(myintent);
 
 
     }
@@ -473,15 +478,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public void getClientGPSLocation(){
 
-    }
-    public void getStoryFromFireBase(Location location){
-
-    }
-    public void updateStory(){
-
-    }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -498,7 +495,7 @@ public class MainActivity extends AppCompatActivity {
     public void getStoies(){
         Log.d("Log---Main--testing","Called");
         Geocoder gcd=new Geocoder(getApplicationContext(), Locale.getDefault());
-        String mclient_city;
+        final String mclient_city;
         try{
             List<Address> client_city=gcd.getFromLocation(clientLocation.getLatitude(),clientLocation.getLongitude(),1);
             mclient_city=client_city.get(0).getLocality();
@@ -553,6 +550,7 @@ public class MainActivity extends AppCompatActivity {
                             geostoryCardAdapter.addStory(downloadedGeostories_image);
                             geostoryCardAdapter.notifyDataSetChanged();
 //                            Log.d("Logcheck---point",story_ids.size()+"@@@@@@@@@@"+storys.size());
+
                             Log.d(TAG, "story set");
                         }
                     });

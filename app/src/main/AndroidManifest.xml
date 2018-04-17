@@ -81,6 +81,10 @@
             android:name=".ShowGeoStoryMap"
             android:label="@string/title_activity_show_geo_story_map"
             ></activity>
+
+
+        <service android:name=".NotificationService.NotifyNewGeoStory"/>
+
     </application>
 
 </manifest>
