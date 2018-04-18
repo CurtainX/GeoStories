@@ -90,7 +90,6 @@ public class StoryControlUtility {
     }
 
     public static void checkLiked(String storyID, String userID, final ImageView btn, final Context context){
-        btn.setImageBitmap(null);
         db.collection("likes").whereEqualTo("story_id",storyID).whereEqualTo("user_id",userID).get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override

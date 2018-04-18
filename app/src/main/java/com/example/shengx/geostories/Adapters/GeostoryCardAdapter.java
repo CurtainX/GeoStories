@@ -102,6 +102,7 @@ public class GeostoryCardAdapter extends RecyclerView.Adapter<GeostoryCardAdapte
         int height_in_pixels = holder.geostory.getLineCount() * holder.geostory.getLineHeight();
         holder.geostory.setHeight(height_in_pixels);
         holder.geostory.setMovementMethod(new ScrollingMovementMethod());
+        holder.like.setImageBitmap(null);
         StoryControlUtility.checkLiked(storyID,clientID,holder.like,context);
         StoryControlUtility.likeCounter(storyID,holder.likecounter);
         StoryControlUtility.commentCounter(storyID,holder.commnentcounter);

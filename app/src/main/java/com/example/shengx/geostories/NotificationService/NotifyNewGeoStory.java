@@ -15,10 +15,13 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 
 import com.example.shengx.geostories.Constances.Geocons;
 import com.example.shengx.geostories.MainActivity;
 import com.example.shengx.geostories.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -56,15 +59,39 @@ public class NotifyNewGeoStory extends IntentService {
 
     public NotifyNewGeoStory() {
         super("GeoService");
-        db=FirebaseFirestore.getInstance();
 
     }
 
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
-        //AlarmManager alarmManager = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
-        //alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,  System.currentTimeMillis(),
-          //      1000, showNotifications());
+
+        final String city=intent.getAction();
+        db=FirebaseFirestore.getInstance();
+        db.collection(Geocons.DBcons.GEOSTORY_DB)
+                .whereEqualTo(Geocons.STORY_CITY, city)
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot snapshots,
+                                        @Nullable FirebaseFirestoreException e) {
+                        if (e != null) {
+                            Log.d("Log", "listen:error", e);
+                            return;
+                        }
+                        for (DocumentChange dc : snapshots.getDocumentChanges()) {
+                            if (dc.getType() == DocumentChange.Type.ADDED) {
+                                Log.d("Loggg", "New Story: " + snapshots.getDocumentChanges().size());
+                                if(snapshots.getDocumentChanges().size()==1){
+                                    if(!snapshots.getDocumentChanges().get(0).getDocument().get(Geocons.CLIENT_ID).toString().equals(FirebaseAuth.getInstance().getUid())){
+                                        showNotifications();
+                                    }
+                                }
+                                break;
+                            }
+
+                        }
+
+                    }
+                });
     }
 
     private void showNotifications() {

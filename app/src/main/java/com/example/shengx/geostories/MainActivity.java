@@ -2,6 +2,7 @@ package com.example.shengx.geostories;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.IntentService;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.IntentSender;
@@ -106,8 +107,7 @@ public class MainActivity extends AppCompatActivity {
     Activity mActivity;
 
     ProgressDialog waitingProgree;
-    Intent myintent;
-
+    Intent myIntentService;
     private Bundle mBundleRecyclerViewState;
     private String LIST_STATE_KEY = "rec_pos";
 
@@ -308,6 +308,7 @@ public class MainActivity extends AppCompatActivity {
         Log.d("Log", "success-->");
 
 
+        myIntentService=new Intent(this, NotifyNewGeoStory.class);
 
 
     }
@@ -498,6 +499,9 @@ public class MainActivity extends AppCompatActivity {
         try{
             List<Address> client_city=gcd.getFromLocation(clientLocation.getLatitude(),clientLocation.getLongitude(),1);
             mclient_city=client_city.get(0).getLocality();
+            myIntentService.setAction(mclient_city);
+            startService(myIntentService);
+
 
             final long ONE_MEGABYTE = 1024 * 1024;
             db.collection(Geocons.DBcons.GEOSTORY_DB)
@@ -546,8 +550,10 @@ public class MainActivity extends AppCompatActivity {
 
                             }
 
-                            geostoryCardAdapter.addStory(downloadedGeostories_image);
-                            geostoryCardAdapter.notifyDataSetChanged();
+                                geostoryCardAdapter.addStory(downloadedGeostories_image);
+                                geostoryCardAdapter.notifyDataSetChanged();
+
+
 //                            Log.d("Logcheck---point",story_ids.size()+"@@@@@@@@@@"+storys.size());
 
                             Log.d(TAG, "story set");
