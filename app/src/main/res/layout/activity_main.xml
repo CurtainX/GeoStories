@@ -16,13 +16,9 @@ android:fitsSystemWindows="true">
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:fitsSystemWindows="true"
-        tools:context="com.example.shengx.geostories.MainActivity">
+        tools:context="com.geo.shengx.geostories.MainActivity">
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/geostories_list"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+
 
         <android.support.design.widget.AppBarLayout
             android:layout_width="match_parent"
@@ -47,7 +43,19 @@ android:fitsSystemWindows="true">
 
         </android.support.design.widget.AppBarLayout>
 
-        <include layout="@layout/content_main" />
+
+        <android.support.v4.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/geostories_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
+        </android.support.v4.widget.NestedScrollView>
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab"

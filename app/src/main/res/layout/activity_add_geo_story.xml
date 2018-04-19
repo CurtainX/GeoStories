@@ -7,7 +7,7 @@
     android:defaultFocusHighlightEnabled="false"
     android:outlineProvider="none"
     app:layout_insetEdge="left"
-    tools:context="com.example.shengx.geostories.AddGeoStory">
+    tools:context="com.geo.shengx.geostories.AddGeoStory">
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="348dp"

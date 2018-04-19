@@ -16,7 +16,7 @@
         android:layout_height="match_parent"
         android:fitsSystemWindows="true"
         android:orientation="vertical"
-        tools:context="com.example.shengx.geostories.MainActivity">
+        tools:context="com.geo.shengx.geostories.MainActivity">
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/my_geostories_list"
