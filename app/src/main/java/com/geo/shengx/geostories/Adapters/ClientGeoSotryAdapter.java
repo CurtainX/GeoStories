@@ -223,7 +223,7 @@ public class ClientGeoSotryAdapter extends RecyclerView.Adapter<ClientGeoSotryAd
             profileImage.setImageBitmap(bitmap);
         } else {
             gsReference_profile_img = storage.getReferenceFromUrl("gs://geostories-87738.appspot.com/" + client_id + ".jpg");
-            if(!profileImage.getTag().equals("Updated")){
+            //if(!profileImage.getTag().equals("Updated")){
                 gsReference_profile_img.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
                     @Override
                     public void onSuccess(byte[] bytes) {
@@ -256,8 +256,8 @@ public class ClientGeoSotryAdapter extends RecyclerView.Adapter<ClientGeoSotryAd
 
                     }
                 });
-            }
-            profileImage.setTag("Updated");
+           // }
+            //profileImage.setTag("Updated");
         }
     }
 
@@ -271,7 +271,7 @@ public class ClientGeoSotryAdapter extends RecyclerView.Adapter<ClientGeoSotryAd
             storyImage.setImageBitmap(bitmap);
         }else {
             gsReference_story_img = storage.getReferenceFromUrl("gs://geostories-87738.appspot.com/"+story_id+".jpg");
-            if(!storyImage.getTag().equals("Updated")){
+           // if(!storyImage.getTag().equals("Updated")){
                 gsReference_story_img.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
                     @Override
                     public void onSuccess(byte[] bytes) {
@@ -307,8 +307,8 @@ public class ClientGeoSotryAdapter extends RecyclerView.Adapter<ClientGeoSotryAd
                     }
                 });
             }
-        }
-        storyImage.setTag("Updated");
+        //}
+        //storyImage.setTag("Updated");
     }
 
 

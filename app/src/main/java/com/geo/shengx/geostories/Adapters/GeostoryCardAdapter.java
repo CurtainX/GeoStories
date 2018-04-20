@@ -3,6 +3,7 @@ package com.geo.shengx.geostories.Adapters;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
@@ -150,9 +151,11 @@ public class GeostoryCardAdapter extends RecyclerView.Adapter<GeostoryCardAdapte
         holder.comment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                SharedPreferences sharedPreferences=context.getSharedPreferences("Client",0);
+                String mClientName=sharedPreferences.getString("username","");
                 Intent intent=new Intent(context,Comments.class);
                 intent.putExtra(Geocons.COMMENT_INTENT_EXTRA,storyID);
-                intent.putExtra(Geocons.CLIENT_NAME,clientName);
+                intent.putExtra(Geocons.CLIENT_NAME,mClientName);
                 context.startActivity(intent);
                 Toast.makeText(v.getContext(),"comment",Toast.LENGTH_LONG).show();
             }
@@ -246,7 +249,7 @@ public class GeostoryCardAdapter extends RecyclerView.Adapter<GeostoryCardAdapte
             storyImage.setImageBitmap(bitmap);
         }else {
             gsReference_story_img = storage.getReferenceFromUrl("gs://geostories-87738.appspot.com/"+story_id+".jpg");
-            if(!storyImage.getTag().equals("Updated")){
+           // if(!storyImage.getTag().equals("Updated")){
                 gsReference_story_img.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
                     @Override
                     public void onSuccess(byte[] bytes) {
@@ -282,8 +285,8 @@ public class GeostoryCardAdapter extends RecyclerView.Adapter<GeostoryCardAdapte
                     }
                 });
             }
-        }
-        storyImage.setTag("Updated");
+        //}
+        //storyImage.setTag("Updated");
     }
 
     public class GeostoryHolder extends RecyclerView.ViewHolder{

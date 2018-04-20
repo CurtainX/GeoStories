@@ -123,7 +123,11 @@ public class NotifyNewGeoStory extends IntentService {
         if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.JELLY_BEAN && Build.VERSION.SDK_INT<Build.VERSION_CODES.O ) {
             mNofication.setPriority(PRIORITY_HIGH);
         }
-        notificationManager.notify(NOTIFICATION_ID,mNofication.build());
+        try{
+            notificationManager.notify(NOTIFICATION_ID,mNofication.build());
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     private PendingIntent contentIntent() {
